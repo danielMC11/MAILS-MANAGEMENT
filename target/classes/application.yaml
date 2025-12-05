@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mails_db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+server:
+  port: 8080
+
+camunda.bpm:
+  admin-user:
+    id: demo
+    password: demo
+
+  deployment-resource-pattern:
+    - classpath*:**/*.bpmn
+    - classpath*:**/*.bpmn20.xml
+    - classpath*:**/*.dmn
+    - classpath*:**/*.dmn11.xml
+    - classpath*:**/*.form
+
+gmail:
+    address: danielcarrillo3200@gmail.com
+    password: "iuhusedwfisimrzb"
+
+
