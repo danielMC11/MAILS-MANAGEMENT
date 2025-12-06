@@ -61,7 +61,7 @@
     <bpmn:startEvent id="StartEvent_1" name="Correo recibido">
       <bpmn:outgoing>Flow_0sdibsf</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="Activity_0mx2g8c" name="Registrar recepción" camunda:expression="${true}" camunda:resultVariable="">
+    <bpmn:serviceTask id="Activity_0mx2g8c" name="Registrar recepción" camunda:delegateExpression="${registrarRecepcion}">
       <bpmn:incoming>Flow_0sdibsf</bpmn:incoming>
       <bpmn:outgoing>Flow_0bc8rfb</bpmn:outgoing>
     </bpmn:serviceTask>

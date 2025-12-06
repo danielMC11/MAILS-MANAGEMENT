@@ -1,5 +1,6 @@
 package com.project.dto;
 
+import com.project.enums.ROL;
 import com.project.validator.ExisteRoles;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -32,15 +33,8 @@ public class UsuarioCrearRequest {
     @Pattern(regexp = "^(3[0-2])[0-9]{8}$", message = "Número de teléfono inválido")
     private String numeroCelular;
 
-
-    @NotBlank(message = "El rol es obligatorio")
     @ExisteRoles
-    private String rol;
-
-
-    @NotBlank(message = "El conjunto de roles no puede estar vacío")
-    @Email(message = "Correo electrónico inválido")
-    private Set<String> roles;
+    private Set<ROL> roles;
 
     @NotBlank(message = "La dirección de correo electrónico es requerida")
     @Email(message = "Correo electrónico inválido")

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -31,8 +32,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioResponse crearUsuario(UsuarioCrearRequest request) {
 
         // 1. **Busca la entidad Rol por su nombre (String)**
-        Rol rolEncontrado = rolRepository.findByNombreRol(request.getRol())
-                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: " + request.getRol()));
+        Set<Rol> roles = new HashSet<>();
+
+        request.getRoles().forEach(rolNombre -> {
+            Rol rol = rolRepository.findByNombreRol(rolNombre)
+                    .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: " + rolNombre));
+            roles.add(rol);
+        });
 
         // 2. **Crea la Entidad Usuario**
         Usuario nuevoUsuario = new Usuario();
@@ -45,7 +51,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         nuevoUsuario.setPassword(passwordEncoder.encode(request.getPassword()));
 
         // 3. **Asigna la Entidad Rol al Usuario**
-        nuevoUsuario.setRoles(Set.of(rolEncontrado));
+        nuevoUsuario.setRoles(roles);
 
         // 4. **Guarda el Usuario**
         Usuario usuarioGuardado = usuarioRepository.save(nuevoUsuario);
@@ -58,4 +64,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .correo(usuarioGuardado.getCorreo())
                 .build();
     }
+
+
 }

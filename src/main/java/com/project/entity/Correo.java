@@ -5,6 +5,7 @@ import lombok.Data;
 import com.project.enums.ESTADO;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -12,8 +13,7 @@ import java.util.UUID;
 @Table(name = "correos")
 public class Correo {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID idProceso;
+    private String idProceso;
 
     @Column(length = 100)
     private String asunto;
@@ -24,19 +24,22 @@ public class Correo {
     @Enumerated(EnumType.STRING)
     private ESTADO estado;
 
-    private LocalDate fechaRecepcion;
-    private LocalDate fechaRespuesta;
+    private LocalDateTime fechaRecepcion;
+
+    private LocalDateTime fechaRespuesta;
+
     private Integer plazoRespuestaEnDias;
 
-    @Column(length = 50)
+
+    @Column(length = 50, unique = true)
     private String radicadoEntrada;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true)
     private String radicadoSalida;
 
     @ManyToOne
-    @JoinColumn(name = "dependencia_id")
-    private Dependencia dependencia;
+    @JoinColumn(name = "cuenta_id")
+    private Cuenta cuenta;
 
     @ManyToOne
     @JoinColumn(name = "tipo_solicitud_id")

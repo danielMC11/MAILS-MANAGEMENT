@@ -5,17 +5,17 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "dependencias")
-public class Dependencia {
+@Table(name = "cuentas")
+public class Cuenta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 50)
-    private String nombreDependencia;
+    private String nombreCuenta;
 
     @Column(length = 64)
-    private String correoDependencia;
+    private String correoCuenta;
 
     @ManyToOne
     @JoinColumn(name = "entidad_id")

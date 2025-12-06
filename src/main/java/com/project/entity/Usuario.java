@@ -18,8 +18,8 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@SQLDelete(sql = "UPDATE users SET active = false WHERE id = ?")
-@SQLRestriction("active = true")
+@SQLDelete(sql = "UPDATE usuarios SET activo = false WHERE id = ?")
+@SQLRestriction("activo = true")
 @Table(name = "usuarios")
 public class Usuario implements UserDetails{
     @Id
@@ -38,7 +38,6 @@ public class Usuario implements UserDetails{
     @Column(length = 64)
     private String correo;
 
-    @Column(length = 32)
     private String password;
 
     private Boolean activo = Boolean.TRUE;;
@@ -59,7 +58,7 @@ public class Usuario implements UserDetails{
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         return  new ArrayList<SimpleGrantedAuthority>(
-                roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getNombreRol())).toList()
+                roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getNombreRol().name())).toList()
         );
 
     }

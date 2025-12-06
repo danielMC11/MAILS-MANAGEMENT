@@ -15,17 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/usuarios") // URL base para los recursos de usuario
+@RequestMapping("/api/v1/usuarios/") // URL base para los recursos de usuario
 public class UsuarioController {
 
-    private final UsuarioService usuarioService; // Uso de 'final' e inyección por constructor
+    private final UsuarioService usuarioService;
 
-    // Inyección de dependencias por constructor (mejor práctica)
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
-    @PostMapping
+    @PostMapping("crear")
     public ResponseEntity<?> crearUsuario(
             @Valid @RequestBody UsuarioCrearRequest request) {
             UsuarioResponse usuarioCreado = usuarioService.crearUsuario(request);

@@ -18,6 +18,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBaseException(
             RuntimeException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getRequestURI());
+        ex.printStackTrace();
         logger.error("Excepción de dominio: {} - URI: {}", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
@@ -29,6 +30,8 @@ public class GlobalExceptionHandler {
 
 
         ErrorResponse errorResponse = new ErrorResponse("Ha ocurrido un error inesperado", request.getRequestURI());
+
+        ex.printStackTrace();
 
         logger.error("Error inesperado en la aplicación. URI: {}", request.getRequestURI(), ex);
 
