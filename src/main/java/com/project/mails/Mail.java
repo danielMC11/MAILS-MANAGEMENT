@@ -36,6 +36,7 @@ public class Mail implements Serializable {
 
     private int messageNumber;
     private String messageId;
+    private String originalMessageId;
 
     private String text;
     private String html;
@@ -50,6 +51,7 @@ public class Mail implements Serializable {
     public Date getReceivedDate() { return receivedDate; }
     public int getMessageNumber() { return messageNumber; }
     public String getMessageId() { return messageId; }
+    public  String getOriginalMessageId() { return originalMessageId; }
     public String getText() { return text; }
     public String getHtml() { return html; }
     public List<Attachment> getAttachments() { return attachments; }
@@ -71,6 +73,34 @@ public class Mail implements Serializable {
 
         if (message instanceof MimeMessage mimeMessage) {
             mail.messageId = mimeMessage.getMessageID();
+        }
+
+
+        String[] references = message.getHeader("References");
+
+        if (references != null && references.length > 0) {
+            // El valor es una cadena con IDs separados por espacio.
+            String referenceString = references[0].trim();
+
+            // Dividir la cadena para obtener todos los IDs del hilo.
+            String[] threadIds = referenceString.split("\\s+");
+
+            // El *primer* ID en la lista (índice 0) es el más antiguo/original.
+            if (threadIds.length > 0) {
+                mail.originalMessageId = threadIds[0];
+            }
+        } else {
+            // Si no hay References, el correo puede ser el inicio de un nuevo hilo
+            // o una respuesta simple. En ese caso, In-Reply-To puede contener el ID anterior.
+            String[] inReplyTo = message.getHeader("In-Reply-To");
+            if (inReplyTo != null && inReplyTo.length > 0) {
+                mail.originalMessageId = inReplyTo[0].trim();
+            }
+        }
+
+        // Si la lógica anterior falla, asumimos que este correo es el original
+        if (mail.originalMessageId == null) {
+            mail.originalMessageId = mail.messageId;
         }
 
         processMessageContent(message, mail);

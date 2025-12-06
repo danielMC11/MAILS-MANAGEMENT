@@ -4,10 +4,12 @@ import com.project.camunda.MailProcessor;
 import com.project.camunda.delegate.Util;
 import com.project.entity.Cuenta;
 import com.project.entity.Entidad;
+import com.project.entity.Usuario;
 import com.project.mails.Mail;
 import com.project.repository.CuentaRepository;
 import com.project.repository.EntidadRepository;
 import com.project.repository.UsuarioRepository;
+import com.project.service.CuentaService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,27 +28,25 @@ public class StartMailProcess implements MailProcessor {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private EntidadRepository entidadRepository;
 
     @Autowired
     private CuentaRepository cuentaRepository;
 
-    @Value("${gmail.address}")
-    private String gmailAddress;
-
+    @Autowired
+    private CuentaService cuentaService;
 
     @Override
     public void process(Mail mail) {
 
+        String from = mail.getFrom();
 
+        String correoCompleto = Util.getCorreoCompleto(from);
 
+        Cuenta cuenta = cuentaRepository.findByCorreoCuenta(correoCompleto).orElse(null);
 
-
-
-
-
-
+        if(cuenta == null) {
+            cuentaService.guardarCuenta(from);
+        }
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("from", Util.getCorreoCompleto(mail.getFrom()));
@@ -54,9 +54,11 @@ public class StartMailProcess implements MailProcessor {
         variables.put("subject", mail.getSubject());
         variables.put("text", mail.getText());
         variables.put("date", mail.getReceivedDate());
+        variables.put("messageId", mail.getOriginalMessageId());
+
+        runtimeService.startProcessInstanceByKey("mails-management-process",  mail.getOriginalMessageId(),variables);
 
 
-        runtimeService.startProcessInstanceByKey("mails-management-process", variables);
     }
 
     @Override
@@ -66,43 +68,8 @@ public class StartMailProcess implements MailProcessor {
 
         String correoCompleto = Util.getCorreoCompleto(from);
 
-        if(cuentaRepository.findByCorreoCuenta(correoCompleto).isPresent()){
-            return true;
-        } else if (usuarioRepository.findByCorreo(correoCompleto).isEmpty()) {
+        return usuarioRepository.findByCorreo(correoCompleto).isEmpty();
 
-
-            String nombreAlias = Util.getNombreAlias(from);
-            String nombreCuenta = Util.getCuenta(correoCompleto);
-            String dominioCorreo = Util.getDominio(correoCompleto);
-            String nombreEntidad = Util.getNombreEntidad(dominioCorreo);
-
-            Cuenta cuenta = new Cuenta();
-            if(nombreAlias != null && !nombreAlias.isEmpty()){
-                cuenta.setNombreCuenta(nombreAlias);
-            } else{
-                cuenta.setNombreCuenta(nombreCuenta);
-            }
-            cuenta.setCorreoCuenta(correoCompleto);
-
-            entidadRepository.findByDominioCorreo(dominioCorreo).ifPresentOrElse(entidad -> {
-                cuenta.setEntidad(entidad);
-                cuentaRepository.save(cuenta);
-            }, () -> {
-                Entidad entidad = new Entidad();
-                entidad.setNombreEntidad(nombreEntidad);
-                entidad.setDominioCorreo(dominioCorreo);
-
-                Entidad entidadGuardada = entidadRepository.save(entidad);
-
-                cuenta.setEntidad(entidadGuardada);
-                cuentaRepository.save(cuenta);
-            }
-            );
-
-            return true;
-        }
-
-        return false;
     }
 
 

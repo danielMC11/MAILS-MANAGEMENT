@@ -35,6 +35,7 @@ public class RegistrarRecepcion implements JavaDelegate {
         String subject= (String) delegateExecution.getVariable("subject");
         String text= (String) delegateExecution.getVariable("text");
         Date date= (Date) delegateExecution.getVariable("date");
+        String messageId= (String) delegateExecution.getVariable("messageId");
 
         ZoneId zonaSistema = ZoneId.systemDefault();
 
@@ -49,6 +50,8 @@ public class RegistrarRecepcion implements JavaDelegate {
 
         Correo correo = new Correo();
         correo.setIdProceso(delegateExecution.getProcessInstanceId());
+        correo.setIdMensaje(messageId);
+
         correo.setFechaRecepcion(localDate);
         correo.setAsunto(subject);
         correo.setCuerpoTexto(text);

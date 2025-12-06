@@ -15,6 +15,8 @@ public class Correo {
     @Id
     private String idProceso;
 
+    private String idMensaje;
+
     @Column(length = 100)
     private String asunto;
 
