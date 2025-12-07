@@ -6,6 +6,9 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.List;
+import java.util.Set;
+
 
 @Getter
 @Setter
@@ -23,5 +26,7 @@ public class UsuarioResponse {
     private String numeroCelular;
 
     private String correo;
+
+    private Set<String> roles;
 
 }

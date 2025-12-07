@@ -1,6 +1,7 @@
 package com.project.camunda.delegate;
 
 
+import com.project.entity.FlujoCorreos;
 import com.project.enums.ETAPA;
 import com.project.service.FlujoCorreoService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -24,7 +25,10 @@ public class RegistrarInicioElaboracion implements JavaDelegate {
         String correoGestor = (String) delegateExecution.getVariable("correoGestor");
         LocalDateTime fechaAsignacionGestor  = (LocalDateTime) delegateExecution.getVariable("fechaAsignacionGestor");
 
-        flujoCorreoService.iniciarFlujo(correoId, correoGestor, ETAPA.ELABORACION, fechaAsignacionGestor);
+        FlujoCorreos flujoCorreo = flujoCorreoService.iniciarFlujo(correoId, correoGestor, ETAPA.ELABORACION, fechaAsignacionGestor);
+
+        delegateExecution.setVariable("flujoElaboracionId", flujoCorreo.getId());
+
 
     }
 }

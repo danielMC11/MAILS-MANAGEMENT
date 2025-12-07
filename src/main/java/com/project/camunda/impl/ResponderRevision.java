@@ -17,13 +17,12 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.regex.Matcher;
 
 @Component
-public class RemitirRevisor implements MailProcessor {
+public class ResponderRevision implements MailProcessor {
 
-    public static String ACTIVITY_ID = "remitirRevisor";
-
+    public static String ACTIVITY_ID = "responderRevision";
 
     @Autowired
     private TaskService taskService;
@@ -34,24 +33,25 @@ public class RemitirRevisor implements MailProcessor {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-
     @Override
     public boolean supports(Mail mail) {
+
         String correoFrom = Util.getCorreoCompleto(mail.getFrom());
         String correoTo = Util.getCorreoCompleto(mail.getTo());
         String businessKey = mail.getOriginalMessageId();
+
 
         Usuario usuarioFrom = usuarioRepository.findByCorreo(correoFrom).orElse(null);
         Usuario usuarioTo =  usuarioRepository.findByCorreo(correoTo).orElse(null);
 
 
         if(usuarioFrom != null &&  usuarioTo != null) {
-            boolean esGestor = usuarioFrom.getRoles().stream().anyMatch(
-                    rol -> rol.getNombreRol() == ROL.GESTOR
+            boolean esRevisor = usuarioFrom.getRoles().stream().anyMatch(
+                    rol -> rol.getNombreRol() == ROL.REVISOR
             );
 
-            boolean esRevisor = usuarioTo.getRoles().stream().anyMatch(
-                    rol -> rol.getNombreRol() == ROL.REVISOR
+            boolean esGestor = usuarioTo.getRoles().stream().anyMatch(
+                    rol -> rol.getNombreRol() == ROL.GESTOR
             );
 
             ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
@@ -61,7 +61,8 @@ public class RemitirRevisor implements MailProcessor {
             List<String> activityIds = runtimeService.getActiveActivityIds(processInstance.getId());
             boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
-            return esGestor && esRevisor && enActividad;
+
+            return esRevisor && esGestor && enActividad;
 
         }
 
@@ -71,17 +72,34 @@ public class RemitirRevisor implements MailProcessor {
     @Override
     public void process(Mail mail) {
         String businessKey = mail.getOriginalMessageId();
+        String cuerpoCorreo = mail.getText();
+        String resultadoRevision = null;
+
+        // 1. Extraer el valor del asunto
+        if (cuerpoCorreo != null) {
+            Matcher matcher = java.util.regex.Pattern.compile("\\[R-(APROBADO|DESAPROBADO)\\]").matcher(cuerpoCorreo);
+            if (matcher.find()) {
+                resultadoRevision = matcher.group(1);
+            }
+        }
 
         Task task = taskService.createTaskQuery()
                 .processInstanceBusinessKey(businessKey)
                 .singleResult();
 
-        if (task != null) {
+        if (task != null && resultadoRevision != null) {
             Map<String,Object> variables = new HashMap<>();
-            variables.put("correoRevisor", Util.getCorreoCompleto(mail.getTo()));
-            variables.put("fechaAsignacionRevisor", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
+            // 2. Lógica para devueltoRevision (true/false)
+            boolean devuelto = resultadoRevision.equals("DESAPROBADO");
+            variables.put("devueltoRevision", devuelto);
+
+            if(!devuelto) {
+                variables.put("fechaFinalizacionRevisor", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
+            }
 
             taskService.complete(task.getId(), variables);
         }
+
     }
+
 }

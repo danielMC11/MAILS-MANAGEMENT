@@ -27,10 +27,10 @@ public class FlujoCorreoServiceImpl implements FlujoCorreoService {
 
 
     @Override
-    public void iniciarFlujo(String correoId, String correoResponsable, ETAPA etapa, LocalDateTime fechaAsignacion) {
+    public FlujoCorreos iniciarFlujo(String correoId, String correoResponsable, ETAPA etapa, LocalDateTime fechaAsignacion) {
 
         Correo correo = correoRepository.findById(correoId)
-                .orElseThrow(() -> new RuntimeException("ID mensaje no encontrado"));
+                .orElseThrow(() -> new RuntimeException("ID correo no encontrado"));
 
         Usuario usuario = usuarioRepository.findByCorreo(correoResponsable)
                 .orElseThrow(() -> new RuntimeException("Correo no encontrado"));
@@ -41,12 +41,19 @@ public class FlujoCorreoServiceImpl implements FlujoCorreoService {
         flujoCorreo.setUsuario(usuario);
         flujoCorreo.setEtapa(etapa);
         flujoCorreo.setFechaAsignacion(fechaAsignacion);
-        flujoCorreosRepository.save(flujoCorreo);
+        return flujoCorreosRepository.save(flujoCorreo);
 
     }
 
     @Override
-    public void terminarFlujo(Long flujoId, LocalDateTime fechaFinalizacion) {
+    public FlujoCorreos terminarFlujo(Long flujoId, LocalDateTime fechaFinalizacion) {
+
+        FlujoCorreos flujoCorreo = flujoCorreosRepository.findById(flujoId)
+                .orElseThrow(() -> new RuntimeException("ID flujo no encontrado"));
+
+        flujoCorreo.setFechaFinalizacion(fechaFinalizacion);
+
+        return flujoCorreosRepository.save(flujoCorreo);
 
     }
 }

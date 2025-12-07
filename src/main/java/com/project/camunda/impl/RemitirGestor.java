@@ -6,12 +6,16 @@ import com.project.entity.Usuario;
 import com.project.enums.ROL;
 import com.project.mails.Mail;
 import com.project.repository.UsuarioRepository;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.runtime.Execution;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +28,9 @@ public class RemitirGestor implements MailProcessor {
     public static String ACTIVITY_ID = "remitirGestor";
 
     @Autowired
+    private RuntimeService runtimeService;
+
+    @Autowired
     private TaskService taskService;
 
     @Autowired
@@ -34,6 +41,8 @@ public class RemitirGestor implements MailProcessor {
 
         String correoFrom = Util.getCorreoCompleto(mail.getFrom());
         String correoTo = Util.getCorreoCompleto(mail.getTo());
+        String businessKey = mail.getOriginalMessageId();
+
 
         Usuario usuarioFrom = usuarioRepository.findByCorreo(correoFrom).orElse(null);
         Usuario usuarioTo =  usuarioRepository.findByCorreo(correoTo).orElse(null);
@@ -48,7 +57,14 @@ public class RemitirGestor implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.GESTOR
             );
 
-            return esIntegrador && esGestor;
+            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+                    .processInstanceBusinessKey(businessKey)
+                    .active() // Asegura que esté activa
+                    .singleResult();
+            List<String> activityIds = runtimeService.getActiveActivityIds(processInstance.getId());
+            boolean enActividad = activityIds.contains(ACTIVITY_ID);
+
+            return esIntegrador && esGestor && enActividad;
 
         }
 
@@ -62,7 +78,6 @@ public class RemitirGestor implements MailProcessor {
 
         Task task = taskService.createTaskQuery()
                 .processInstanceBusinessKey(businessKey)
-                .taskDefinitionKey(RemitirGestor.ACTIVITY_ID)
                 .singleResult();
 
         if (task != null) {

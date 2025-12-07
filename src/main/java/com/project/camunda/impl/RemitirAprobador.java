@@ -20,10 +20,9 @@ import java.util.Map;
 
 
 @Component
-public class RemitirRevisor implements MailProcessor {
+public class RemitirAprobador implements MailProcessor {
 
-    public static String ACTIVITY_ID = "remitirRevisor";
-
+    public static String ACTIVITY_ID = "remitirAprobador";
 
     @Autowired
     private TaskService taskService;
@@ -34,12 +33,12 @@ public class RemitirRevisor implements MailProcessor {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-
     @Override
     public boolean supports(Mail mail) {
         String correoFrom = Util.getCorreoCompleto(mail.getFrom());
         String correoTo = Util.getCorreoCompleto(mail.getTo());
         String businessKey = mail.getOriginalMessageId();
+
 
         Usuario usuarioFrom = usuarioRepository.findByCorreo(correoFrom).orElse(null);
         Usuario usuarioTo =  usuarioRepository.findByCorreo(correoTo).orElse(null);
@@ -50,8 +49,8 @@ public class RemitirRevisor implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.GESTOR
             );
 
-            boolean esRevisor = usuarioTo.getRoles().stream().anyMatch(
-                    rol -> rol.getNombreRol() == ROL.REVISOR
+            boolean esAprobador = usuarioTo.getRoles().stream().anyMatch(
+                    rol -> rol.getNombreRol() == ROL.APROBADOR
             );
 
             ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
@@ -61,7 +60,7 @@ public class RemitirRevisor implements MailProcessor {
             List<String> activityIds = runtimeService.getActiveActivityIds(processInstance.getId());
             boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
-            return esGestor && esRevisor && enActividad;
+            return esGestor && esAprobador && enActividad;
 
         }
 
@@ -78,8 +77,8 @@ public class RemitirRevisor implements MailProcessor {
 
         if (task != null) {
             Map<String,Object> variables = new HashMap<>();
-            variables.put("correoRevisor", Util.getCorreoCompleto(mail.getTo()));
-            variables.put("fechaAsignacionRevisor", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
+            variables.put("correoAprobador", Util.getCorreoCompleto(mail.getTo()));
+            variables.put("fechaAsignacionAprobador", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
 
             taskService.complete(task.getId(), variables);
         }
