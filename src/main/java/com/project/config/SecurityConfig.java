@@ -37,9 +37,11 @@ public class SecurityConfig {
 				// 1. CORS es obligatorio para enviar Cookies al front
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.csrf(AbstractHttpConfigurer::disable) // Habilítalo en prod con CookieCsrfTokenRepository
-
+				.authorizeHttpRequests(request -> {
+					request.anyRequest().permitAll();
+				});
 				// 2. Manejo de errores
-				.exceptionHandling(exceptions -> exceptions
+				/*.exceptionHandling(exceptions -> exceptions
 						.authenticationEntryPoint(customUnauthorizedHandler)
 						.accessDeniedHandler(customAccessDeniedHandler)
 				)
@@ -68,7 +70,7 @@ public class SecurityConfig {
 						.logoutSuccessHandler((req, resp, auth) -> resp.setStatus(HttpServletResponse.SC_OK))
 				)
 
-				.authenticationProvider(authenticationProvider);
+				.authenticationProvider(authenticationProvider);*/
 
 		return http.build();
 	}

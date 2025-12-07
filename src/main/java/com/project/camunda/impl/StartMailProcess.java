@@ -54,7 +54,7 @@ public class StartMailProcess implements MailProcessor {
         variables.put("subject", mail.getSubject());
         variables.put("text", mail.getText());
         variables.put("date", mail.getReceivedDate());
-        variables.put("messageId", mail.getOriginalMessageId());
+        variables.put("correoId", mail.getOriginalMessageId());
 
         runtimeService.startProcessInstanceByKey("mails-management-process",  mail.getOriginalMessageId(),variables);
 

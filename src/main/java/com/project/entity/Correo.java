@@ -12,10 +12,12 @@ import java.util.UUID;
 @Entity
 @Table(name = "correos")
 public class Correo {
-    @Id
-    private String idProceso;
 
-    private String idMensaje;
+    @Id
+    @Column(name = "correo_id")
+    private String id;
+
+    private String idProceso;
 
     @Column(length = 100)
     private String asunto;

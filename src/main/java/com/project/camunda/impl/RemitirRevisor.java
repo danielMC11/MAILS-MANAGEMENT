@@ -13,15 +13,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 @Component
-public class RemitirGestor implements MailProcessor {
+public class RemitirRevisor implements MailProcessor {
 
+    public static String ACTIVITY_ID = "remitirRevisor";
 
-    public static String ACTIVITY_ID = "remitirGestor";
 
     @Autowired
     private TaskService taskService;
@@ -29,9 +27,9 @@ public class RemitirGestor implements MailProcessor {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+
     @Override
     public boolean supports(Mail mail) {
-
         String correoFrom = Util.getCorreoCompleto(mail.getFrom());
         String correoTo = Util.getCorreoCompleto(mail.getTo());
 
@@ -40,15 +38,15 @@ public class RemitirGestor implements MailProcessor {
 
 
         if(usuarioFrom != null &&  usuarioTo != null) {
-            boolean esIntegrador = usuarioFrom.getRoles().stream().anyMatch(
-                    rol -> rol.getNombreRol() == ROL.INTEGRADOR
-            );
-
-            boolean esGestor = usuarioTo.getRoles().stream().anyMatch(
+            boolean esGestor = usuarioFrom.getRoles().stream().anyMatch(
                     rol -> rol.getNombreRol() == ROL.GESTOR
             );
 
-            return esIntegrador && esGestor;
+            boolean esRevisor = usuarioTo.getRoles().stream().anyMatch(
+                    rol -> rol.getNombreRol() == ROL.REVISOR
+            );
+
+            return esGestor && esRevisor;
 
         }
 
@@ -57,22 +55,19 @@ public class RemitirGestor implements MailProcessor {
 
     @Override
     public void process(Mail mail) {
-
         String businessKey = mail.getOriginalMessageId();
 
         Task task = taskService.createTaskQuery()
                 .processInstanceBusinessKey(businessKey)
-                .taskDefinitionKey(RemitirGestor.ACTIVITY_ID)
+                .taskDefinitionKey(RemitirRevisor.ACTIVITY_ID)
                 .singleResult();
 
         if (task != null) {
             Map<String,Object> variables = new HashMap<>();
-            variables.put("correoGestor", Util.getCorreoCompleto(mail.getTo()));
-            variables.put("fechaAsignacionGestor", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
+            variables.put("correoRevisor", Util.getCorreoCompleto(mail.getTo()));
+            variables.put("fechaAsignacionRevisor", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
 
             taskService.complete(task.getId(), variables);
         }
-
-
     }
 }

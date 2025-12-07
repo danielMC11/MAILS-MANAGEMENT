@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-@Service("registrarInicioElaboracion")
-public class RegistrarInicioElaboracion implements JavaDelegate {
+@Service("registrarInicioRevisionn")
+public class RegistrarInicioRevision implements JavaDelegate {
 
 
     @Autowired
@@ -19,12 +19,12 @@ public class RegistrarInicioElaboracion implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
-
         String correoId = (String) delegateExecution.getVariable("correoId");
-        String correoGestor = (String) delegateExecution.getVariable("correoGestor");
-        LocalDateTime fechaAsignacionGestor  = (LocalDateTime) delegateExecution.getVariable("fechaAsignacionGestor");
+        String correoRevisor = (String) delegateExecution.getVariable("correoRevisor");
+        LocalDateTime fechaAsignacionRevisor  = (LocalDateTime) delegateExecution.getVariable("fechaAsignacionGestor");
 
-        flujoCorreoService.iniciarFlujo(correoId, correoGestor, ETAPA.ELABORACION, fechaAsignacionGestor);
-
+        flujoCorreoService.iniciarFlujo(correoId, correoRevisor, ETAPA.REVISION, fechaAsignacionRevisor);
     }
+
+
 }

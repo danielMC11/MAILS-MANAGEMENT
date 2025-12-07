@@ -15,7 +15,7 @@ public class CorreoServiceImpl implements CorreoService {
     private CorreoRepository correoRepository;
 
     @Override
-    public void registrarNuevoCorreo(Correo correo) {
-        correoRepository.save(correo);
+    public Correo registrarNuevoCorreo(Correo correo) {
+        return correoRepository.save(correo);
     }
 }

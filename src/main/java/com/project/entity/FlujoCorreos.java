@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Data
@@ -26,6 +27,6 @@ public class FlujoCorreos {
     @Enumerated(EnumType.STRING)
     private ETAPA etapa;
 
-    private LocalDate fechaAsignacion;
-    private LocalDate fechaFinalizacion;
+    private LocalDateTime fechaAsignacion;
+    private LocalDateTime fechaFinalizacion;
 }

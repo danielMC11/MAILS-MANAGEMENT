@@ -35,30 +35,23 @@ public class RegistrarRecepcion implements JavaDelegate {
         String subject= (String) delegateExecution.getVariable("subject");
         String text= (String) delegateExecution.getVariable("text");
         Date date= (Date) delegateExecution.getVariable("date");
-        String messageId= (String) delegateExecution.getVariable("messageId");
-
-        ZoneId zonaSistema = ZoneId.systemDefault();
-
-        // 2. Convierte Date a Instant y luego a LocalDate usando la zona
-        LocalDateTime localDate = date.toInstant()
-                .atZone(zonaSistema)
-                .toLocalDateTime();
+        String correoId= (String) delegateExecution.getVariable("correoId");
 
         Cuenta cuenta = cuentaRepository.findByCorreoCuenta(from).orElseThrow(
                 () -> new RuntimeException("Cuenta con correo no encontrada")
         );
 
         Correo correo = new Correo();
+        correo.setId(correoId);
         correo.setIdProceso(delegateExecution.getProcessInstanceId());
-        correo.setIdMensaje(messageId);
-
-        correo.setFechaRecepcion(localDate);
+        correo.setFechaRecepcion(Util.convertirDateALocalDatetime(date));
         correo.setAsunto(subject);
         correo.setCuerpoTexto(text);
         correo.setEstado(ESTADO.PENDIENTE);
         correo.setCuenta(cuenta);
 
         correoService.registrarNuevoCorreo(correo);
+
 
     }
 

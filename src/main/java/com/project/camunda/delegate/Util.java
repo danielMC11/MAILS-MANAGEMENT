@@ -3,6 +3,10 @@ package com.project.camunda.delegate;
 
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 @Configuration
 public class Util {
 
@@ -87,5 +91,16 @@ public class Util {
         }
         // Si no hay punto (ej: dominio "localhost"), devuelve el dominio completo
         return dominio;
+    }
+
+
+    public static LocalDateTime convertirDateALocalDatetime(Date date){
+        ZoneId zonaSistema = ZoneId.systemDefault();
+
+        // 2. Convierte Date a Instant y luego a LocalDate usando la zona
+        return date.toInstant()
+                .atZone(zonaSistema)
+                .toLocalDateTime();
+
     }
 }
