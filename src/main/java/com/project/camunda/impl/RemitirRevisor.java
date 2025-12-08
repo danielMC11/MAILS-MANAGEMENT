@@ -3,6 +3,7 @@ package com.project.camunda.impl;
 import com.project.camunda.MailProcessor;
 import com.project.camunda.delegate.Util;
 import com.project.entity.Usuario;
+import com.project.enums.ETAPA;
 import com.project.enums.ROL;
 import com.project.mails.Mail;
 import com.project.repository.UsuarioRepository;
@@ -54,14 +55,19 @@ public class RemitirRevisor implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.REVISOR
             );
 
-            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+            String processInstanceId = runtimeService.createProcessInstanceQuery()
                     .processInstanceBusinessKey(businessKey)
                     .active() // Asegura que esté activa
-                    .singleResult();
-            List<String> activityIds = runtimeService.getActiveActivityIds(processInstance.getId());
+                    .singleResult()
+                    .getId();
+
+            List<String> activityIds = runtimeService.getActiveActivityIds(processInstanceId);
             boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
-            return esGestor && esRevisor && enActividad;
+            ETAPA etapaActual = (ETAPA) runtimeService.getVariable(processInstanceId, "etapaActual");
+
+
+            return esGestor && esRevisor && enActividad  &&  (etapaActual == ETAPA.ELABORACION || etapaActual == ETAPA.REVISION);
 
         }
 

@@ -2,10 +2,14 @@ package com.project.camunda.delegate;
 
 import com.project.entity.Correo;
 import com.project.entity.Cuenta;
+import com.project.entity.FlujoCorreos;
 import com.project.enums.ESTADO;
+import com.project.enums.ETAPA;
 import com.project.repository.CorreoRepository;
 import com.project.repository.CuentaRepository;
+import com.project.repository.FlujoCorreosRepository;
 import com.project.service.CorreoService;
+import com.project.service.FlujoCorreoService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,9 @@ public class RegistrarRecepcion implements JavaDelegate {
 
     @Autowired
     private CuentaRepository cuentaRepository;
+
+    @Autowired
+    private FlujoCorreoService flujoCorreoService;
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
@@ -50,7 +57,14 @@ public class RegistrarRecepcion implements JavaDelegate {
         correo.setEstado(ESTADO.PENDIENTE);
         correo.setCuenta(cuenta);
 
-        correoService.registrarNuevoCorreo(correo);
+        Correo correoGuardado = correoService.registrarNuevoCorreo(correo);
+
+
+        String correoIntegrador = (String) delegateExecution.getVariable("correoIntegrador");
+        FlujoCorreos flujoCorreos = flujoCorreoService.iniciarFlujo(correoGuardado.getId(), correoIntegrador, ETAPA.RECEPCION, Util.convertirDateALocalDatetime(date));
+
+        delegateExecution.setVariable("flujoRecepcionId", flujoCorreos.getId());
+        delegateExecution.setVariable("etapaActual", ETAPA.RECEPCION);
 
 
     }

@@ -50,7 +50,7 @@ public class StartMailProcess implements MailProcessor {
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("from", Util.getCorreoCompleto(mail.getFrom()));
-        variables.put("to", Util.getCorreoCompleto(mail.getTo()));
+        variables.put("correoIntegrador", Util.getCorreoCompleto(mail.getTo()));
         variables.put("subject", mail.getSubject());
         variables.put("text", mail.getText());
         variables.put("date", mail.getReceivedDate());

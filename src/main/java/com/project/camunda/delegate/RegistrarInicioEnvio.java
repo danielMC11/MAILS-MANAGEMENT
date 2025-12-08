@@ -1,6 +1,5 @@
 package com.project.camunda.delegate;
 
-
 import com.project.entity.FlujoCorreos;
 import com.project.enums.ETAPA;
 import com.project.service.FlujoCorreoService;
@@ -11,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-@Service("registrarInicioAprobacion")
-public class RegistrarInicioAprobacion implements JavaDelegate {
+@Service("registrarInicioEnvio")
+public class RegistrarInicioEnvio implements JavaDelegate {
 
     @Autowired
     private FlujoCorreoService flujoCorreoService;
@@ -20,13 +19,17 @@ public class RegistrarInicioAprobacion implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
         String correoId = (String) delegateExecution.getVariable("correoId");
-        String correoAprobador = (String) delegateExecution.getVariable("correoAprobador");
-        LocalDateTime fechaAsignacionGestor  = (LocalDateTime) delegateExecution.getVariable("fechaAsignacionAprobador");
+        String correoIntegrador = (String) delegateExecution.getVariable("correoIntegrador");
+        LocalDateTime fechaAsignacionIntegrador  = (LocalDateTime) delegateExecution.getVariable("fechaFinalizacionGestor");
 
-        FlujoCorreos flujoCorreo = flujoCorreoService.iniciarFlujo(correoId, correoAprobador, ETAPA.APROBACION, fechaAsignacionGestor);
+        FlujoCorreos flujoCorreo = flujoCorreoService.iniciarFlujo(correoId, correoIntegrador, ETAPA.ENVIO, fechaAsignacionIntegrador);
 
-        delegateExecution.setVariable("flujoAprobacionId", flujoCorreo.getId());
-        delegateExecution.setVariable("etapaActual", ETAPA.APROBACION);
+        delegateExecution.setVariable("flujoEnvioId", flujoCorreo.getId());
+        delegateExecution.setVariable("etapaActual", ETAPA.ENVIO);
+
 
     }
+
+
+
 }

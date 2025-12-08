@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface CorreoRepository extends JpaRepository<Correo,Long> {
 
 
-    Optional<Correo> findById(String idMensaje);
+    Optional<Correo> findById(String correoId);
 
 
 }

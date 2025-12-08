@@ -26,6 +26,9 @@ public class RegistrarInicioRevision implements JavaDelegate {
 
         FlujoCorreos flujoCorreos = flujoCorreoService.iniciarFlujo(correoId, correoRevisor, ETAPA.REVISION, fechaAsignacionRevisor);
         delegateExecution.setVariable("flujoRevisionId", flujoCorreos.getId());
+        delegateExecution.setVariable("etapaActual", ETAPA.REVISION);
+
+
 
     }
 

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0j0vpzu" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.39.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="mails-management-process" isExecutable="true" camunda:jobPriority="1" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1" name="Correo Recibido">
+      <bpmn:outgoing>Flow_1vfd8qk</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_0mx2g8c" name="Registrar recepción" camunda:delegateExpression="${registrarRecepcion}">
+      <bpmn:incoming>Flow_1vfd8qk</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qcwmoo</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1vfd8qk" sourceRef="StartEvent_1" targetRef="Activity_0mx2g8c" />
+    <bpmn:sequenceFlow id="Flow_1qcwmoo" sourceRef="Activity_0mx2g8c" targetRef="Activity_1yjgnr6" />
+    <bpmn:callActivity id="Activity_1yjgnr6" name="Gestionar Correo" calledElement="mails-management-call">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1qcwmoo</bpmn:incoming>
+      <bpmn:outgoing>Flow_0djjx2u</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="Event_1mt01r0" name="Corrreo gestionado">
+      <bpmn:incoming>Flow_0djjx2u</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0djjx2u" sourceRef="Activity_1yjgnr6" targetRef="Event_1mt01r0" />
+    <bpmn:boundaryEvent id="Event_18kfwf4" name="Recordatorio Anticipado" cancelActivity="false" attachedToRef="Activity_1yjgnr6">
+      <bpmn:outgoing>Flow_1iif1sn</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_15vl3pb">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/P1D</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Event_0gsar88" name="Recordatorio de vencimiento" cancelActivity="false" attachedToRef="Activity_1yjgnr6">
+      <bpmn:outgoing>Flow_01kpsn3</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_05ra59l">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/P1D</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="Activity_1dboln5" name="Recordar gestión próxima a vencer" camunda:expression="${true}">
+      <bpmn:incoming>Flow_1iif1sn</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yv5xt6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1iif1sn" sourceRef="Event_18kfwf4" targetRef="Activity_1dboln5" />
+    <bpmn:serviceTask id="Activity_0nggbqb" name="Recordar gestión vencida" camunda:expression="${true}">
+      <bpmn:incoming>Flow_01kpsn3</bpmn:incoming>
+      <bpmn:outgoing>Flow_0epay0u</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_01kpsn3" sourceRef="Event_0gsar88" targetRef="Activity_0nggbqb" />
+    <bpmn:endEvent id="Event_1aohdgm">
+      <bpmn:incoming>Flow_0yv5xt6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0yv5xt6" sourceRef="Activity_1dboln5" targetRef="Event_1aohdgm" />
+    <bpmn:endEvent id="Event_18eyzol">
+      <bpmn:incoming>Flow_0epay0u</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0epay0u" sourceRef="Activity_0nggbqb" targetRef="Event_18eyzol" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="mails-management-process">
+      <bpmndi:BPMNShape id="Activity_1k9z086_di" bpmnElement="Activity_1yjgnr6">
+        <dc:Bounds x="470" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="162" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="140" y="145" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1pjhl0d_di" bpmnElement="Activity_0mx2g8c">
+        <dc:Bounds x="260" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mt01r0_di" bpmnElement="Event_1mt01r0">
+        <dc:Bounds x="712" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="703" y="145" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zy4mzc_di" bpmnElement="Activity_0nggbqb">
+        <dc:Bounds x="630" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1o1xujj_di" bpmnElement="Activity_1dboln5">
+        <dc:Bounds x="490" y="290" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_18eyzol_di" bpmnElement="Event_18eyzol">
+        <dc:Bounds x="772" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1aohdgm_di" bpmnElement="Event_1aohdgm">
+        <dc:Bounds x="652" y="312" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_07oesdq" bpmnElement="Event_18kfwf4">
+        <dc:Bounds x="452" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="388" y="166" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ravwsb_di" bpmnElement="Event_0gsar88">
+        <dc:Bounds x="552" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="590" y="146" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1vfd8qk_di" bpmnElement="Flow_1vfd8qk">
+        <di:waypoint x="198" y="120" />
+        <di:waypoint x="260" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qcwmoo_di" bpmnElement="Flow_1qcwmoo">
+        <di:waypoint x="360" y="120" />
+        <di:waypoint x="470" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0djjx2u_di" bpmnElement="Flow_0djjx2u">
+        <di:waypoint x="570" y="120" />
+        <di:waypoint x="712" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1iif1sn_di" bpmnElement="Flow_1iif1sn">
+        <di:waypoint x="470" y="178" />
+        <di:waypoint x="470" y="330" />
+        <di:waypoint x="490" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01kpsn3_di" bpmnElement="Flow_01kpsn3">
+        <di:waypoint x="570" y="178" />
+        <di:waypoint x="570" y="240" />
+        <di:waypoint x="630" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yv5xt6_di" bpmnElement="Flow_0yv5xt6">
+        <di:waypoint x="590" y="330" />
+        <di:waypoint x="652" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0epay0u_di" bpmnElement="Flow_0epay0u">
+        <di:waypoint x="730" y="240" />
+        <di:waypoint x="772" y="240" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

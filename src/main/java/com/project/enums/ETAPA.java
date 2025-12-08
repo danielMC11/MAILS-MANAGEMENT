@@ -1,5 +1,5 @@
 package com.project.enums;
 
 public enum ETAPA {
-    ELABORACION, REVISION, APROBACION
+    RECEPCION, ELABORACION, REVISION, APROBACION, ENVIO
 }

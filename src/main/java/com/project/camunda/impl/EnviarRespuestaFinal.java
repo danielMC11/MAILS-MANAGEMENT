@@ -2,15 +2,18 @@ package com.project.camunda.impl;
 
 import com.project.camunda.MailProcessor;
 import com.project.camunda.delegate.Util;
+import com.project.entity.Correo;
+import com.project.entity.Cuenta;
 import com.project.entity.Usuario;
 import com.project.enums.ETAPA;
 import com.project.enums.ROL;
 import com.project.mails.Mail;
+import com.project.repository.CorreoRepository;
+import com.project.repository.CuentaRepository;
 import com.project.repository.UsuarioRepository;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.runtime.Execution;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,12 +21,12 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 @Component
-public class ResponderRevision implements MailProcessor {
+public class EnviarRespuestaFinal implements MailProcessor {
 
-    public static String ACTIVITY_ID = "responderRevision";
+    public static String ACTIVITY_ID = "enviarRespuestaFinal";
+
 
     @Autowired
     private TaskService taskService;
@@ -34,26 +37,31 @@ public class ResponderRevision implements MailProcessor {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private CuentaRepository cuentaRepository;
+
+    @Autowired
+    private CorreoRepository correoRepository;
+
+
+
     @Override
     public boolean supports(Mail mail) {
-
         String correoFrom = Util.getCorreoCompleto(mail.getFrom());
         String correoTo = Util.getCorreoCompleto(mail.getTo());
         String businessKey = mail.getOriginalMessageId();
 
 
         Usuario usuarioFrom = usuarioRepository.findByCorreo(correoFrom).orElse(null);
-        Usuario usuarioTo =  usuarioRepository.findByCorreo(correoTo).orElse(null);
+        Cuenta cuentaTo = cuentaRepository.findByCorreoCuenta(correoTo).orElse(null);
+        Correo correo = correoRepository.findById(businessKey).orElse(null);
 
+        if(usuarioFrom != null &&  cuentaTo != null && correo != null) {
 
-        if(usuarioFrom != null &&  usuarioTo != null) {
-            boolean esRevisor = usuarioFrom.getRoles().stream().anyMatch(
-                    rol -> rol.getNombreRol() == ROL.REVISOR
+            boolean esIntegrador = usuarioFrom.getRoles().stream().anyMatch(
+                    rol -> rol.getNombreRol() == ROL.INTEGRADOR
             );
 
-            boolean esGestor = usuarioTo.getRoles().stream().anyMatch(
-                    rol -> rol.getNombreRol() == ROL.GESTOR
-            );
 
             String processInstanceId = runtimeService.createProcessInstanceQuery()
                     .processInstanceBusinessKey(businessKey)
@@ -67,8 +75,7 @@ public class ResponderRevision implements MailProcessor {
             ETAPA etapaActual = (ETAPA) runtimeService.getVariable(processInstanceId, "etapaActual");
 
 
-
-            return esRevisor && esGestor && enActividad && etapaActual == ETAPA.REVISION;
+            return correo.getCuenta().equals(cuentaTo) && esIntegrador && esIntegrador && enActividad && etapaActual == ETAPA.ENVIO;
 
         }
 
@@ -78,34 +85,15 @@ public class ResponderRevision implements MailProcessor {
     @Override
     public void process(Mail mail) {
         String businessKey = mail.getOriginalMessageId();
-        String cuerpoCorreo = mail.getText();
-        String resultadoRevision = null;
-
-        // 1. Extraer el valor del asunto
-        if (cuerpoCorreo != null) {
-            Matcher matcher = java.util.regex.Pattern.compile("\\[R-(APROBADO|DESAPROBADO)\\]").matcher(cuerpoCorreo);
-            if (matcher.find()) {
-                resultadoRevision = matcher.group(1);
-            }
-        }
 
         Task task = taskService.createTaskQuery()
                 .processInstanceBusinessKey(businessKey)
                 .singleResult();
 
-        if (task != null && resultadoRevision != null) {
+        if (task != null) {
             Map<String,Object> variables = new HashMap<>();
-            // 2. Lógica para devueltoRevision (true/false)
-            boolean devuelto = resultadoRevision.equals("DESAPROBADO");
-            variables.put("devueltoRevision", devuelto);
-
-            if(!devuelto) {
-                variables.put("fechaFinalizacionRevisor", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
-            }
-
+            variables.put("fechaFinalizacionIntegrador", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
             taskService.complete(task.getId(), variables);
         }
-
     }
-
 }

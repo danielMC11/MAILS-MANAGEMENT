@@ -25,9 +25,16 @@ public class RegistrarInicioElaboracion implements JavaDelegate {
         String correoGestor = (String) delegateExecution.getVariable("correoGestor");
         LocalDateTime fechaAsignacionGestor  = (LocalDateTime) delegateExecution.getVariable("fechaAsignacionGestor");
 
+
+        Long flujoRecepcionId = (Long) delegateExecution.getVariable("flujoRecepcionId");
+        flujoCorreoService.terminarFlujo(flujoRecepcionId, fechaAsignacionGestor);
+
+
+
         FlujoCorreos flujoCorreo = flujoCorreoService.iniciarFlujo(correoId, correoGestor, ETAPA.ELABORACION, fechaAsignacionGestor);
 
         delegateExecution.setVariable("flujoElaboracionId", flujoCorreo.getId());
+        delegateExecution.setVariable("etapaActual", ETAPA.ELABORACION);
 
 
     }
