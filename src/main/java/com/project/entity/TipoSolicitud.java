@@ -13,4 +13,8 @@ public class TipoSolicitud {
 
     @Column(length = 50)
     private String nombre;
+
+    public String getNombreTipoSolicitud() {
+        return  nombre;
+    }
 }

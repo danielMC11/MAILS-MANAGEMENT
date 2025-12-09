@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+com\project\dto\correo\CorreoEstadisticasResponse$CorreoEstadisticasResponseBuilder.class
+com\project\dto\correo\CorreoEstadisticasResponse.class
+>>>>>>> rama1
 com\project\dto\UsuarioActualizarRequest.class
 com\project\mails\MailConfig.class
 com\project\service\impl\CorreoServiceImpl.class
@@ -8,10 +13,18 @@ com\project\entity\TipoSolicitud.class
 com\project\Application.class
 com\project\service\impl\CuentaServiceImpl.class
 com\project\mails\Attachment.class
+<<<<<<< HEAD
+=======
+com\project\dto\cuenta\CuentaResponse.class
+>>>>>>> rama1
 com\project\config\SecurityConfig.class
 com\project\service\FlujoCorreoService.class
 com\project\repository\UsuarioRepository.class
 com\project\camunda\delegate\RegistrarRecepcion.class
+<<<<<<< HEAD
+=======
+com\project\controller\EntidadController.class
+>>>>>>> rama1
 com\project\exceptions\GlobalExceptionHandler.class
 com\project\camunda\impl\EnviarRespuestaFinal.class
 com\project\config\ApplicationConfig.class
@@ -19,25 +32,55 @@ com\project\camunda\delegate\RegistrarInicioEnvio.class
 com\project\camunda\delegate\RegistrarFinEnvio.class
 com\project\camunda\impl\RemitirAprobador.class
 com\project\repository\CuentaRepository.class
+<<<<<<< HEAD
 com\project\mails\ImapService$1.class
 com\project\entity\Rol.class
 com\project\service\EntidadService.class
 com\project\repository\RolRepository.class
+=======
+com\project\dto\correo\CorreoResponse.class
+com\project\repository\FlujoCorreoRepository.class
+com\project\dto\cuenta\CuentaCrearRequest.class
+com\project\mails\ImapService$1.class
+com\project\controller\FlujoCorreoController.class
+com\project\dto\flujocorreo\FlujoCorreoEstadisticasResponse$FlujoCorreoEstadisticasResponseBuilder.class
+com\project\entity\Rol.class
+com\project\service\EntidadService.class
+com\project\repository\RolRepository.class
+com\project\dto\flujocorreo\FlujoCorreoResponse.class
+com\project\dto\entidad\EntidadResponse.class
+>>>>>>> rama1
 com\project\enums\ROL.class
 com\project\validator\ExisteRolesValidator.class
 com\project\camunda\delegate\RegistrarFinElaboracion.class
 com\project\camunda\delegate\RegistrarInicioAprobacion.class
+<<<<<<< HEAD
 com\project\camunda\delegate\Util.class
 com\project\camunda\delegate\RegistrarFinRevision.class
 com\project\service\CorreoService.class
+=======
+com\project\dto\cuenta\CuentaResponse$CuentaResponseBuilder.class
+com\project\camunda\delegate\Util.class
+com\project\camunda\delegate\RegistrarFinRevision.class
+com\project\service\CorreoService.class
+com\project\dto\flujocorreo\FlujoCorreoFilterRequest.class
+>>>>>>> rama1
 com\project\camunda\MailProcessor.class
 com\project\service\UsuarioService.class
 com\project\service\CuentaService.class
 com\project\camunda\impl\EnviarBandejaSalida.class
+<<<<<<< HEAD
+=======
+com\project\dto\cuenta\CuentaActualizarRequest.class
+>>>>>>> rama1
 com\project\exceptions\auth\CustomAccessDeniedHandler.class
 com\project\service\impl\EntidadServiceImpl.class
 com\project\mails\Mail.class
 com\project\camunda\impl\RemitirGestor.class
+<<<<<<< HEAD
+=======
+com\project\controller\CorreoController.class
+>>>>>>> rama1
 com\project\entity\FlujoCorreos.class
 com\project\dto\UsuarioResponse$UsuarioResponseBuilder.class
 com\project\camunda\delegate\RegistrarInicioRevision.class
@@ -48,18 +91,41 @@ com\project\camunda\impl\StartMailProcess.class
 com\project\camunda\delegate\RegistrarInicioElaboracion.class
 com\project\entity\Cuenta.class
 com\project\camunda\impl\ResponderRevision.class
+<<<<<<< HEAD
+=======
+com\project\controller\CuentaController.class
+>>>>>>> rama1
 com\project\enums\ETAPA.class
 com\project\service\impl\FlujoCorreoServiceImpl.class
 com\project\mails\ImapService.class
 com\project\camunda\delegate\RegistrarFinAprobacion.class
 com\project\repository\TipoSolicitudRepository.class
+<<<<<<< HEAD
 com\project\repository\FlujoCorreosRepository.class
+=======
+com\project\dto\entidad\EntidadResponse$EntidadResponseBuilder.class
+com\project\dto\flujocorreo\FlujoCorreoEstadisticasResponse.class
+com\project\dto\entidad\EntidadActualizarRequest.class
+>>>>>>> rama1
 com\project\exceptions\ErrorResponse.class
 com\project\repository\EntidadRepository.class
 com\project\validator\ExisteRoles.class
 com\project\camunda\impl\ResponderAprobacion.class
+<<<<<<< HEAD
 com\project\entity\Entidad.class
 com\project\entity\Correo.class
 com\project\enums\ESTADO.class
 com\project\entity\Usuario.class
 com\project\dto\UsuarioCrearRequest.class
+=======
+com\project\dto\correo\CorreoResponse$CorreoResponseBuilder.class
+com\project\entity\Entidad.class
+com\project\dto\entidad\EntidadCrearRequest.class
+com\project\dto\flujocorreo\FlujoCorreoResponse$FlujoCorreoResponseBuilder.class
+com\project\entity\Correo.class
+com\project\enums\ESTADO.class
+com\project\entity\Usuario.class
+com\project\service\impl\CorreoServiceImpl$DatosVencimiento.class
+com\project\dto\UsuarioCrearRequest.class
+com\project\dto\correo\CorreoFilterRequest.class
+>>>>>>> rama1

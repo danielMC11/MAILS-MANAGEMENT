@@ -6,10 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-
 @Repository
 public interface EntidadRepository extends JpaRepository<Entidad, Long> {
 
     Optional<Entidad> findByDominioCorreo(String dominioCorreo);
+
+    boolean existsByDominioCorreo(String dominioCorreo);
 
 }
