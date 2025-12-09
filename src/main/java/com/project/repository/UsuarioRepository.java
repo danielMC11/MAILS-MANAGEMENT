@@ -21,6 +21,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Transactional
     void deleteById(Long id);
 
+
+
     // NUEVOS MÉTODOS PARA BÚSQUEDA
     @Query("SELECT DISTINCT u FROM Usuario u LEFT JOIN FETCH u.roles r " +
             "WHERE LOWER(u.nombres) LIKE LOWER(CONCAT('%', :nombre, '%')) OR " +

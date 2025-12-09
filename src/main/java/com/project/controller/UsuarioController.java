@@ -44,6 +44,14 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.actualizarUsuario(id, request));
     }
 
+    @PutMapping("{id}/estado")
+    public ResponseEntity<?> cambiarEstado(
+            @PathVariable("id") Long id,
+            @RequestParam("activo") boolean activo) {
+        usuarioService.cambiarEstado(id, activo);
+        return ResponseEntity.ok().build();
+    }
+
     // ====================  ENDPOINTS PARA LISTAR ====================
 
     /**
@@ -136,5 +144,8 @@ public class UsuarioController {
         // Por ahora usar el existente y buscar por ID
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
+
+
+
 
 }

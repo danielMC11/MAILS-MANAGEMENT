@@ -177,6 +177,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         return construirResponse(usuario);
     }
 
+    @Override
+    public void cambiarEstado(Long id, boolean activo) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + id));
+        usuario.setActivo(activo);
+        usuarioRepository.save(usuario);
+    }
+
     // ==================== MÉTODO PRIVADO PARA CONSTRUIR RESPONSE ====================
 
     private UsuarioResponse construirResponse(Usuario usuario) {
@@ -189,6 +197,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .roles(usuario.getRoles().stream()
                         .map(rol -> rol.getNombreRol().name())
                         .collect(Collectors.toSet()))
+                .activo(usuario.getActivo())
                 .build();
     }
 }

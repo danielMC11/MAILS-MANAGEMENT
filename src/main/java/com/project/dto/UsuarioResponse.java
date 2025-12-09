@@ -29,4 +29,6 @@ public class UsuarioResponse {
 
     private Set<String> roles;
 
+    private boolean activo;
+
 }
