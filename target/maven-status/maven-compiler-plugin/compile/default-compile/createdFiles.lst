@@ -24,11 +24,15 @@ com\project\camunda\delegate\RegistrarFinEnvio.class
 com\project\camunda\impl\RemitirAprobador.class
 com\project\repository\CuentaRepository.class
 com\project\dto\correo\CorreoResponse.class
+com\project\repository\FlujoCorreoRepository.class
 com\project\dto\cuenta\CuentaCrearRequest.class
 com\project\mails\ImapService$1.class
+com\project\controller\FlujoCorreoController.class
+com\project\dto\flujocorreo\FlujoCorreoEstadisticasResponse$FlujoCorreoEstadisticasResponseBuilder.class
 com\project\entity\Rol.class
 com\project\service\EntidadService.class
 com\project\repository\RolRepository.class
+com\project\dto\flujocorreo\FlujoCorreoResponse.class
 com\project\dto\entidad\EntidadResponse.class
 com\project\enums\ROL.class
 com\project\validator\ExisteRolesValidator.class
@@ -38,6 +42,7 @@ com\project\dto\cuenta\CuentaResponse$CuentaResponseBuilder.class
 com\project\camunda\delegate\Util.class
 com\project\camunda\delegate\RegistrarFinRevision.class
 com\project\service\CorreoService.class
+com\project\dto\flujocorreo\FlujoCorreoFilterRequest.class
 com\project\camunda\MailProcessor.class
 com\project\service\UsuarioService.class
 com\project\service\CuentaService.class
@@ -65,7 +70,7 @@ com\project\mails\ImapService.class
 com\project\camunda\delegate\RegistrarFinAprobacion.class
 com\project\repository\TipoSolicitudRepository.class
 com\project\dto\entidad\EntidadResponse$EntidadResponseBuilder.class
-com\project\repository\FlujoCorreosRepository.class
+com\project\dto\flujocorreo\FlujoCorreoEstadisticasResponse.class
 com\project\dto\entidad\EntidadActualizarRequest.class
 com\project\exceptions\ErrorResponse.class
 com\project\repository\EntidadRepository.class
@@ -74,6 +79,7 @@ com\project\camunda\impl\ResponderAprobacion.class
 com\project\dto\correo\CorreoResponse$CorreoResponseBuilder.class
 com\project\entity\Entidad.class
 com\project\dto\entidad\EntidadCrearRequest.class
+com\project\dto\flujocorreo\FlujoCorreoResponse$FlujoCorreoResponseBuilder.class
 com\project\entity\Correo.class
 com\project\enums\ESTADO.class
 com\project\entity\Usuario.class

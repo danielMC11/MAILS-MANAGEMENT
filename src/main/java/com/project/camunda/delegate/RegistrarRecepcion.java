@@ -7,7 +7,7 @@ import com.project.enums.ESTADO;
 import com.project.enums.ETAPA;
 import com.project.repository.CorreoRepository;
 import com.project.repository.CuentaRepository;
-import com.project.repository.FlujoCorreosRepository;
+import com.project.repository.FlujoCorreoRepository;
 import com.project.service.CorreoService;
 import com.project.service.FlujoCorreoService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;

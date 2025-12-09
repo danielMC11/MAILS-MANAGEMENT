@@ -23,6 +23,7 @@ C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MA
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\controller\CorreoController.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\controller\CuentaController.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\controller\EntidadController.java
+C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\controller\FlujoCorreoController.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\controller\UsuarioController.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\correo\CorreoEstadisticasResponse.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\correo\CorreoFilterRequest.java
@@ -33,6 +34,9 @@ C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MA
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\entidad\EntidadActualizarRequest.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\entidad\EntidadCrearRequest.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\entidad\EntidadResponse.java
+C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\FlujoCorreos\FlujoCorreoEstadisticasResponse.java
+C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\FlujoCorreos\FlujoCorreoFilterRequest.java
+C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\FlujoCorreos\FlujoCorreoResponse.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\UsuarioActualizarRequest.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\UsuarioCrearRequest.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\dto\UsuarioResponse.java
@@ -57,7 +61,7 @@ C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MA
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\repository\CorreoRepository.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\repository\CuentaRepository.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\repository\EntidadRepository.java
-C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\repository\FlujoCorreosRepository.java
+C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\repository\FlujoCorreoRepository.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\repository\RolRepository.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\repository\TipoSolicitudRepository.java
 C:\Users\steve\OneDrive\Escritorio\Proyecto_TrazabilidadEmails_llanoGas\MAILS-MANAGEMENT\src\main\java\com\project\repository\UsuarioRepository.java
