@@ -63,10 +63,14 @@ public class UsuarioController {
      */
     @GetMapping("pagina")
     public ResponseEntity<Page<UsuarioResponse>> listarUsuariosPaginados(
-            @RequestParam(defaultValue = "0") Integer pagina,
-            @RequestParam(defaultValue = "10") Integer tamano,
-            @RequestParam(defaultValue = "id") String ordenarPor,
-            @RequestParam(defaultValue = "ASC") String direccion) {
+            // Agrega "pagina" dentro de    la anotación
+            @RequestParam(name = "pagina", defaultValue = "0") Integer pagina,
+            // Agrega "tamano"
+            @RequestParam(name = "tamano", defaultValue = "10") Integer tamano,
+            // Agrega "ordenarPor"
+            @RequestParam(name = "ordenarPor", defaultValue = "id") String ordenarPor,
+            // Agrega "direccion"
+            @RequestParam(name = "direccion", defaultValue = "ASC") String direccion) {
 
         Sort sort = direccion.equalsIgnoreCase("DESC")
                 ? Sort.by(ordenarPor).descending()
