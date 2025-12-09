@@ -28,4 +28,7 @@ public interface UsuarioService {
 
     UsuarioResponse obtenerUsuarioPorId(Long id);
 
+    void cambiarEstado(Long id, boolean activo);
+
+
 }
