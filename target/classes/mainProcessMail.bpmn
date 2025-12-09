@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0j0vpzu" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.39.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:collaboration id="Collaboration_1f7iwxm">
+    <bpmn:participant id="Participant_1sh4luz" name="Llanogas" processRef="mails-management-process" />
+  </bpmn:collaboration>
   <bpmn:process id="mails-management-process" isExecutable="true" camunda:jobPriority="1" camunda:historyTimeToLive="180">
-    <bpmn:startEvent id="StartEvent_1" name="Correo Recibido">
-      <bpmn:outgoing>Flow_1vfd8qk</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:serviceTask id="Activity_0mx2g8c" name="Registrar recepción" camunda:delegateExpression="${registrarRecepcion}">
-      <bpmn:incoming>Flow_1vfd8qk</bpmn:incoming>
-      <bpmn:outgoing>Flow_1qcwmoo</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1vfd8qk" sourceRef="StartEvent_1" targetRef="Activity_0mx2g8c" />
-    <bpmn:sequenceFlow id="Flow_1qcwmoo" sourceRef="Activity_0mx2g8c" targetRef="remitirGestor" />
+    <bpmn:laneSet id="LaneSet_11vijnp">
+      <bpmn:lane id="Lane_1bykf7d" name="Integrador">
+        <bpmn:flowNodeRef>Activity_1yjgnr6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1mt01r0</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0nggbqb</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_18eyzol</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1aohdgm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1dboln5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>remitirGestor</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0mx2g8c</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_18kfwf4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0gsar88</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
     <bpmn:callActivity id="Activity_1yjgnr6" name="Gestionar Correo" calledElement="mails-management-call">
       <bpmn:extensionElements>
         <camunda:in variables="all" />
@@ -21,7 +30,28 @@
     <bpmn:endEvent id="Event_1mt01r0" name="Corrreo gestionado">
       <bpmn:incoming>Flow_0djjx2u</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0djjx2u" sourceRef="Activity_1yjgnr6" targetRef="Event_1mt01r0" />
+    <bpmn:serviceTask id="Activity_0nggbqb" name="Recordar gestión vencida" camunda:expression="${true}">
+      <bpmn:incoming>Flow_01kpsn3</bpmn:incoming>
+      <bpmn:outgoing>Flow_0epay0u</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_18eyzol">
+      <bpmn:incoming>Flow_0epay0u</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_1aohdgm">
+      <bpmn:incoming>Flow_0yv5xt6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_1dboln5" name="Recordar gestión próxima a vencer">
+      <bpmn:incoming>Flow_1iif1sn</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yv5xt6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="remitirGestor" name="Remitir a gestor">
+      <bpmn:incoming>Flow_1qcwmoo</bpmn:incoming>
+      <bpmn:outgoing>Flow_0gbvnht</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_0mx2g8c" name="Registrar recepción" camunda:delegateExpression="${registrarRecepcion}">
+      <bpmn:incoming>Flow_1vfd8qk</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qcwmoo</bpmn:outgoing>
+    </bpmn:serviceTask>
     <bpmn:boundaryEvent id="Event_18kfwf4" name="Recordatorio Anticipado" cancelActivity="false" attachedToRef="Activity_1yjgnr6">
       <bpmn:outgoing>Flow_1iif1sn</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_15vl3pb">
@@ -34,32 +64,28 @@
         <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/${fechaVencimiento}/P1D</bpmn:timeCycle>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_1iif1sn" sourceRef="Event_18kfwf4" targetRef="Activity_1dboln5" />
-    <bpmn:serviceTask id="Activity_0nggbqb" name="Recordar gestión vencida" camunda:expression="${true}">
-      <bpmn:incoming>Flow_01kpsn3</bpmn:incoming>
-      <bpmn:outgoing>Flow_0epay0u</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_01kpsn3" sourceRef="Event_0gsar88" targetRef="Activity_0nggbqb" />
-    <bpmn:endEvent id="Event_1aohdgm">
-      <bpmn:incoming>Flow_0yv5xt6</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0yv5xt6" sourceRef="Activity_1dboln5" targetRef="Event_1aohdgm" />
-    <bpmn:endEvent id="Event_18eyzol">
-      <bpmn:incoming>Flow_0epay0u</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0epay0u" sourceRef="Activity_0nggbqb" targetRef="Event_18eyzol" />
-    <bpmn:userTask id="remitirGestor" name="Remitir a gestor">
-      <bpmn:incoming>Flow_1qcwmoo</bpmn:incoming>
-      <bpmn:outgoing>Flow_0gbvnht</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:userTask id="Activity_1dboln5" name="Recordar gestión próxima a vencer">
-      <bpmn:incoming>Flow_1iif1sn</bpmn:incoming>
-      <bpmn:outgoing>Flow_0yv5xt6</bpmn:outgoing>
-    </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_0gbvnht" sourceRef="remitirGestor" targetRef="Activity_1yjgnr6" />
+    <bpmn:sequenceFlow id="Flow_0djjx2u" sourceRef="Activity_1yjgnr6" targetRef="Event_1mt01r0" />
+    <bpmn:sequenceFlow id="Flow_01kpsn3" sourceRef="Event_0gsar88" targetRef="Activity_0nggbqb" />
+    <bpmn:sequenceFlow id="Flow_0epay0u" sourceRef="Activity_0nggbqb" targetRef="Event_18eyzol" />
+    <bpmn:sequenceFlow id="Flow_0yv5xt6" sourceRef="Activity_1dboln5" targetRef="Event_1aohdgm" />
+    <bpmn:sequenceFlow id="Flow_1iif1sn" sourceRef="Event_18kfwf4" targetRef="Activity_1dboln5" />
+    <bpmn:sequenceFlow id="Flow_1vfd8qk" sourceRef="StartEvent_1" targetRef="Activity_0mx2g8c" />
+    <bpmn:sequenceFlow id="Flow_1qcwmoo" sourceRef="Activity_0mx2g8c" targetRef="remitirGestor" />
+    <bpmn:startEvent id="StartEvent_1" name="Correo Recibido">
+      <bpmn:outgoing>Flow_1vfd8qk</bpmn:outgoing>
+    </bpmn:startEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="mails-management-process">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1f7iwxm">
+      <bpmndi:BPMNShape id="Participant_1sh4luz_di" bpmnElement="Participant_1sh4luz" isHorizontal="true">
+        <dc:Bounds x="130" y="60" width="1000" height="340" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1bykf7d_di" bpmnElement="Lane_1bykf7d" isHorizontal="true">
+        <dc:Bounds x="160" y="60" width="970" height="340" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1k9z086_di" bpmnElement="Activity_1yjgnr6">
         <dc:Bounds x="770" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -82,12 +108,6 @@
       <bpmndi:BPMNShape id="Activity_17t4a4k_di" bpmnElement="Activity_1dboln5">
         <dc:Bounds x="790" y="290" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
-        <dc:Bounds x="182" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="160" y="145" width="81" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0hgdega_di" bpmnElement="remitirGestor">
         <dc:Bounds x="480" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -95,6 +115,12 @@
       <bpmndi:BPMNShape id="Activity_1pjhl0d_di" bpmnElement="Activity_0mx2g8c">
         <dc:Bounds x="310" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="222" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="145" width="81" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_07oesdq" bpmnElement="Event_18kfwf4">
         <dc:Bounds x="752" y="142" width="36" height="36" />
@@ -108,6 +134,10 @@
           <dc:Bounds x="890" y="146" width="79" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0gbvnht_di" bpmnElement="Flow_0gbvnht">
+        <di:waypoint x="580" y="120" />
+        <di:waypoint x="770" y="120" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0djjx2u_di" bpmnElement="Flow_0djjx2u">
         <di:waypoint x="870" y="120" />
         <di:waypoint x="1012" y="120" />
@@ -131,16 +161,12 @@
         <di:waypoint x="790" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1vfd8qk_di" bpmnElement="Flow_1vfd8qk">
-        <di:waypoint x="218" y="120" />
+        <di:waypoint x="258" y="120" />
         <di:waypoint x="310" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1qcwmoo_di" bpmnElement="Flow_1qcwmoo">
         <di:waypoint x="410" y="120" />
         <di:waypoint x="480" y="120" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0gbvnht_di" bpmnElement="Flow_0gbvnht">
-        <di:waypoint x="580" y="120" />
-        <di:waypoint x="770" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
