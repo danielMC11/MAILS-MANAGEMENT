@@ -64,19 +64,18 @@ public class EnviarRespuestaFinal implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.INTEGRADOR
             );
 
-            if(!Util.isBusinessKeyAssociatedWithRoot(runtimeService, businessKey)) {
 
-                String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+                String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);
 
 
-                List<String> activityIds = runtimeService.getActiveActivityIds(childInstanceId);
+                List<String> activityIds = runtimeService.getActiveActivityIds(activeProcessInstanceId);
                 boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
-                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(childInstanceId, "etapaActual");
+                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(activeProcessInstanceId, "etapaActual");
 
 
                 return correo.getCuenta().equals(cuentaTo) && esIntegrador && esIntegrador && enActividad && etapaActual == ETAPA.ENVIO;
-            }
+
         }
 
         return false;
@@ -87,21 +86,22 @@ public class EnviarRespuestaFinal implements MailProcessor {
         String businessKey = mail.getOriginalMessageId();
 
         String text = mail.getText();
-        String regex = "\\[R-S-\\d+\\]";
-        String radicadoSalida = null;
+        String regex = "\\[R-S-(\\d+)\\]"; // <--- CAMBIO CLAVE
+
+        String radicadoSalida = null; // Cambiado el nombre de la variable para reflejar que es solo el número
 
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(text);
 
         if (matcher.find()) {
-            radicadoSalida =  matcher.group(0); // Devuelve la coincidencia completa, ej: "[R-E-1234]"
+            radicadoSalida = matcher.group(1);
         }
 
-        String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+        String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);
 
 
         Task task = taskService.createTaskQuery()
-                .processInstanceId(childInstanceId)
+                .processInstanceId(activeProcessInstanceId)
                 .singleResult();
 
         if (task != null) {

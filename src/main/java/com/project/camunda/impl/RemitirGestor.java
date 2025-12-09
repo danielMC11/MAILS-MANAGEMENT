@@ -60,24 +60,20 @@ public class RemitirGestor implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.GESTOR
             );
 
-            if (Util.isBusinessKeyAssociatedWithRoot(runtimeService, businessKey)) {
 
 
-                String processInstanceId = runtimeService.createProcessInstanceQuery()
-                        .processInstanceBusinessKey(businessKey)
-                        .active() // Asegura que esté activa
-                        .singleResult()
-                        .getId();
+            String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);
 
-                List<String> activityIds = runtimeService.getActiveActivityIds(processInstanceId);
+
+            List<String> activityIds = runtimeService.getActiveActivityIds(activeProcessInstanceId);
                 boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
-                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(processInstanceId, "etapaActual");
+                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(activeProcessInstanceId, "etapaActual");
 
 
                 return esIntegrador && esGestor && enActividad && etapaActual == ETAPA.RECEPCION;
 
-            }
+
         }
 
         return false;
@@ -134,8 +130,10 @@ public class RemitirGestor implements MailProcessor {
         String fechaAlertaStr = (fechaAlerta != null) ? fechaAlerta.format(formatter) : null;
 
 
+        String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);
+
         Task task = taskService.createTaskQuery()
-                .processInstanceBusinessKey(businessKey)
+                .processInstanceId(activeProcessInstanceId)
                 .singleResult();
 
         if (task != null) {

@@ -55,19 +55,18 @@ public class ResponderAprobacion implements MailProcessor {
             );
 
 
-            if(!Util.isBusinessKeyAssociatedWithRoot(runtimeService, businessKey)) {
 
-                String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+                String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);
 
 
-                List<String> activityIds = runtimeService.getActiveActivityIds(childInstanceId);
+                List<String> activityIds = runtimeService.getActiveActivityIds(activeProcessInstanceId);
                 boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
-                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(childInstanceId, "etapaActual");
+                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(activeProcessInstanceId, "etapaActual");
 
 
                 return esAprobador && esGestor && enActividad && etapaActual == ETAPA.APROBACION;
-            }
+
         }
 
         return false;
@@ -87,11 +86,11 @@ public class ResponderAprobacion implements MailProcessor {
             }
         }
 
-        String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+        String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);
 
 
         Task task = taskService.createTaskQuery()
-                .processInstanceId(childInstanceId)
+                .processInstanceId(activeProcessInstanceId)
                 .singleResult();
 
         // Solo procede si la tarea existe y se encontró [R-OK]

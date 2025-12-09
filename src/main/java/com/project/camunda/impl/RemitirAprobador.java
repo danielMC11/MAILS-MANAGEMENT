@@ -54,21 +54,19 @@ public class RemitirAprobador implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.APROBADOR
             );
 
-            if (!Util.isBusinessKeyAssociatedWithRoot(runtimeService, businessKey)) {
+
+                String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);
 
 
-                String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
-
-
-                List<String> activityIds = runtimeService.getActiveActivityIds(childInstanceId);
+                List<String> activityIds = runtimeService.getActiveActivityIds(activeProcessInstanceId);
                 boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
-                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(childInstanceId, "etapaActual");
+                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(activeProcessInstanceId, "etapaActual");
 
 
                 return esGestor && esAprobador && enActividad && etapaActual == ETAPA.REVISION;
 
-            }
+
 
         }
 
@@ -78,11 +76,11 @@ public class RemitirAprobador implements MailProcessor {
     @Override
     public void process(Mail mail) {
         String businessKey = mail.getOriginalMessageId();
-        String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+        String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);
 
 
         Task task = taskService.createTaskQuery()
-                .processInstanceId(childInstanceId)
+                .processInstanceId(activeProcessInstanceId)
                 .singleResult();
 
         if (task != null) {

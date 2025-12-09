@@ -108,7 +108,7 @@ public class Util {
 
     }
 
-    public static String getChildProcessInstanceId(RuntimeService runtimeService, String parentBusinessKey) {
+    public static String getActiveProcessInstanceId(RuntimeService runtimeService, String parentBusinessKey) {
         // 1. Buscar el proceso PADRE
         ProcessInstance parentInstance = runtimeService.createProcessInstanceQuery()
                 .processInstanceBusinessKey(parentBusinessKey)
@@ -129,7 +129,7 @@ public class Util {
             return childInstance.getId();
         }
 
-        return null; // El padre existe, pero no tiene subprocesos activos
+        return parentInstance.getId(); // El padre existe, pero no tiene subprocesos activos
     }
 
     public static boolean isBusinessKeyAssociatedWithRoot(RuntimeService runtimeService, String businessKey) {
