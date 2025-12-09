@@ -11,12 +11,12 @@
         <bpmn:flowNodeRef>Activity_0nggbqb</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_18eyzol</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_1aohdgm</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_1dboln5</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>remitirGestor</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0mx2g8c</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_18kfwf4</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_0gsar88</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1dboln5</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:callActivity id="Activity_1yjgnr6" name="Gestionar Correo" calledElement="mails-management-call">
@@ -30,7 +30,7 @@
     <bpmn:endEvent id="Event_1mt01r0" name="Corrreo gestionado">
       <bpmn:incoming>Flow_0djjx2u</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:serviceTask id="Activity_0nggbqb" name="Recordar gestión vencida" camunda:expression="${true}">
+    <bpmn:serviceTask id="Activity_0nggbqb" name="Recordar gestión vencida" camunda:delegateExpression="${recordarVencimiento}">
       <bpmn:incoming>Flow_01kpsn3</bpmn:incoming>
       <bpmn:outgoing>Flow_0epay0u</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -40,10 +40,6 @@
     <bpmn:endEvent id="Event_1aohdgm">
       <bpmn:incoming>Flow_0yv5xt6</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="Activity_1dboln5" name="Recordar gestión próxima a vencer">
-      <bpmn:incoming>Flow_1iif1sn</bpmn:incoming>
-      <bpmn:outgoing>Flow_0yv5xt6</bpmn:outgoing>
-    </bpmn:userTask>
     <bpmn:userTask id="remitirGestor" name="Remitir a gestor">
       <bpmn:incoming>Flow_1qcwmoo</bpmn:incoming>
       <bpmn:outgoing>Flow_0gbvnht</bpmn:outgoing>
@@ -75,6 +71,10 @@
     <bpmn:startEvent id="StartEvent_1" name="Correo Recibido">
       <bpmn:outgoing>Flow_1vfd8qk</bpmn:outgoing>
     </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_1dboln5" name="Recordar gestión próxima a vencer" camunda:delegateExpression="${recordarProximoVencimiento}">
+      <bpmn:incoming>Flow_1iif1sn</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yv5xt6</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1f7iwxm">
@@ -105,9 +105,6 @@
       <bpmndi:BPMNShape id="Event_1aohdgm_di" bpmnElement="Event_1aohdgm">
         <dc:Bounds x="952" y="312" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_17t4a4k_di" bpmnElement="Activity_1dboln5">
-        <dc:Bounds x="790" y="290" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0hgdega_di" bpmnElement="remitirGestor">
         <dc:Bounds x="480" y="80" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -121,6 +118,9 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="200" y="145" width="81" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1tk8vg4_di" bpmnElement="Activity_1dboln5">
+        <dc:Bounds x="790" y="290" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_07oesdq" bpmnElement="Event_18kfwf4">
         <dc:Bounds x="752" y="142" width="36" height="36" />

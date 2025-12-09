@@ -47,9 +47,7 @@ public class CorreoServiceImpl implements CorreoService {
 
     @Override
     public void ingresarRadicadoEntrada(String correoId, String radicadoEntrada) {
-        Correo correo = correoRepository.findById(correoId).orElseThrow(
-                () -> new RuntimeException("Correo no encontrado")
-        );
+        Correo correo = obtenerCorreoEntity(correoId);
 
         correo.setRadicadoEntrada(radicadoEntrada);
 
@@ -58,9 +56,7 @@ public class CorreoServiceImpl implements CorreoService {
 
     @Override
     public void ingresarRadicadoSalida(String correoId, String radicadoSalida) {
-        Correo correo = correoRepository.findById(correoId).orElseThrow(
-                () -> new RuntimeException("Correo no encontrado")
-        );
+        Correo correo = obtenerCorreoEntity(correoId);
 
         correo.setRadicadoSalida(radicadoSalida);
 
@@ -70,14 +66,29 @@ public class CorreoServiceImpl implements CorreoService {
 
     @Override
     public void establecerPlazoEnDias(String correoId, Integer plazoRespuesta) {
-        Correo correo = correoRepository.findById(correoId).orElseThrow(
-                () -> new RuntimeException("Correo no encontrado")
-        );
+        Correo correo = obtenerCorreoEntity(correoId);
 
         correo.setPlazoRespuestaEnDias(plazoRespuesta);
 
         correoRepository.save(correo);
 
+    }
+
+    @Override
+    public void ingresarGestionId(String correoId, String gestionId) {
+        Correo correo = obtenerCorreoEntity(correoId);
+
+        correo.setGestionId(gestionId);
+
+        correoRepository.save(correo);
+    }
+
+
+    @Override
+    public void vencerCorreo(String correoId) {
+        Correo correo = obtenerCorreoEntity(correoId);
+        correo.setEstado(ESTADO.VENCIDO);
+        correoRepository.save(correo);
     }
 
     @Override

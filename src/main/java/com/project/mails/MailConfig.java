@@ -29,7 +29,7 @@ public class MailConfig {
                     .filter(p -> p.supports(mail))
                     .findFirst()
                     .ifPresentOrElse(
-                            processor -> processor.process(mail),
+                                processor -> processor.process(mail),
                             () -> LOG.info("No action defined for this mail")
                     );
         };

@@ -48,4 +48,6 @@ public class Correo {
     @ManyToOne
     @JoinColumn(name = "tipo_solicitud_id")
     private TipoSolicitud tipoSolicitud;
+
+    private String gestionId;
 }

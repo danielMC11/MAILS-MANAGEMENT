@@ -6,7 +6,9 @@ import com.project.entity.Usuario;
 import com.project.enums.ETAPA;
 import com.project.enums.ROL;
 import com.project.mails.Mail;
+import com.project.repository.CorreoRepository;
 import com.project.repository.UsuarioRepository;
+import com.project.service.CorreoService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.runtime.Execution;
@@ -38,6 +40,9 @@ public class RemitirGestor implements MailProcessor {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private CorreoService correoService;
 
     @Override
     public boolean supports(Mail mail) {
@@ -83,11 +88,15 @@ public class RemitirGestor implements MailProcessor {
     public void process(Mail mail) {
 
         String businessKey = mail.getOriginalMessageId();
+
+        String idGestion = mail.getMessageId();
+        correoService.ingresarGestionId(businessKey, idGestion);
+
         String text = mail.getText();
 
-        String regex = "\\[R-E-(\\d+)\\]"; // <--- CAMBIO CLAVE
+        String regex = "\\[R-E-(\\d+)\\]";
 
-        String radicadoEntrada = null; // Cambiado el nombre de la variable para reflejar que es solo el número
+        String radicadoEntrada = "SIN-ASIGNAR";
 
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(text);
@@ -96,39 +105,40 @@ public class RemitirGestor implements MailProcessor {
             radicadoEntrada = matcher.group(1);
         }
 
-
         int diasPlazo = 0;
         LocalDateTime fechaLimiteRespuesta = null; // Esta será la fecha de vencimiento
 
-        Pattern patternPR = Pattern.compile("\\[PR-(\\d+)\\]");
+        Pattern patternPR = Pattern.compile("\\[P-R-(\\d+)\\]");
         Matcher matcherPR = patternPR.matcher(text);
 
         if (matcherPR.find()) {
             String diasStr = matcherPR.group(1);
+
             try {
                 diasPlazo = Integer.parseInt(diasStr);
+
+                // Si se encontró [PR-X] y X es >= 3, establece la fecha límite
+                if (diasPlazo >= 3) {
+                    fechaLimiteRespuesta = LocalDateTime.now().plusDays(diasPlazo).plusMinutes(3);
+                }
+
             } catch (NumberFormatException e) {
                 System.err.println("Error al parsear días de plazo: " + diasStr);
             }
         }
 
-        if (diasPlazo > 0) {
-            fechaLimiteRespuesta = LocalDateTime.now().plusDays(diasPlazo);
+        if (fechaLimiteRespuesta == null) {
+            // Si no se encontró un patrón válido o el plazo era menor a 3 días,
+            // se establece la fecha límite a HOY + 3 días.
+            fechaLimiteRespuesta = LocalDateTime.now().plusDays(3).plusMinutes(3);
         }
 
-        // --- 3. CÁLCULO DE LA FECHA DE ALERTA (VENCIMIENTO - 3 DÍAS) ---
-
-        LocalDateTime fechaAlerta = null;
-        if (fechaLimiteRespuesta != null) {
-            fechaAlerta = fechaLimiteRespuesta.minusDays(3);
-        }
-
-        // --- 4. FORMATO DE FECHAS (Para almacenar en Camunda) ---
+        LocalDateTime fechaAlerta = fechaLimiteRespuesta.minusDays(3);
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        String fechaVencimientoStr = (fechaLimiteRespuesta != null) ? fechaLimiteRespuesta.format(formatter) : null;
-        String fechaAlertaStr = (fechaAlerta != null) ? fechaAlerta.format(formatter) : null;
 
+        String fechaVencimientoStr = fechaLimiteRespuesta.format(formatter);
+        String fechaAlertaStr = fechaAlerta.format(formatter);
 
         String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);
 
@@ -140,17 +150,11 @@ public class RemitirGestor implements MailProcessor {
             Map<String,Object> variables = new HashMap<>();
             variables.put("radicadoEntrada", radicadoEntrada);
             variables.put("plazoRespuestaEnDias", diasPlazo);
-
-            //PRUEBA RECORDATORIO
-
-            LocalDateTime fechaAlertaPrueba = fechaAlerta.plusMinutes(5);
-            String fechaAlertaPruebaStr = fechaAlertaPrueba.format(formatter);
-
-
-            variables.put("fechaAlerta", fechaAlertaPruebaStr);
+            variables.put("fechaAlerta", fechaAlertaStr);
             variables.put("fechaVencimiento", fechaVencimientoStr);
             variables.put("correoGestor", Util.getCorreoCompleto(mail.getTo()));
             variables.put("fechaAsignacionGestor", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
+            variables.put("gestionId", idGestion);
 
             taskService.complete(task.getId(), variables);
         }

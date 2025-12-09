@@ -22,6 +22,10 @@ public interface CorreoService {
 
     void establecerPlazoEnDias(String correoId, Integer plazoRespuesta);
 
+    void ingresarGestionId(String correoId, String gestionId);
+
+    void vencerCorreo(String correoId);
+
     // Consultas básicas
     CorreoResponse obtenerCorreoPorId(String id);
     Page<CorreoResponse> listarCorreos(CorreoFilterRequest filtro);

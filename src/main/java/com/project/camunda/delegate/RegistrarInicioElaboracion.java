@@ -32,8 +32,11 @@ public class RegistrarInicioElaboracion implements JavaDelegate {
         Long flujoRecepcionId = (Long) delegateExecution.getVariable("flujoRecepcionId");
         flujoCorreoService.terminarFlujo(flujoRecepcionId, fechaAsignacionGestor);
 
+
         String radicadoEntrada = (String) delegateExecution.getVariable("radicadoEntrada");
-        correoService.ingresarRadicadoEntrada(correoId, radicadoEntrada);
+        if(!radicadoEntrada.equals("SIN-ASIGNAR")) {
+            correoService.ingresarRadicadoEntrada(correoId, radicadoEntrada);
+        }
 
         Integer plazoRespuestaEnDias = (Integer) delegateExecution.getVariable("plazoRespuestaEnDias");
         correoService.establecerPlazoEnDias(correoId, plazoRespuestaEnDias);

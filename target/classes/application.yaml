@@ -9,6 +9,20 @@ spring:
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: danielcarrillo3200@gmail.com
+    password: "iuhusedwfisimrzb"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
 server:
   port: 8080
 
@@ -27,5 +41,6 @@ camunda.bpm:
 gmail:
     address: danielcarrillo3200@gmail.com
     password: "iuhusedwfisimrzb"
+
 
 
