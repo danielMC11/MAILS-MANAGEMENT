@@ -362,7 +362,7 @@ public class CorreoServiceImpl implements CorreoService {
 
 
     private CorreoResponse construirResponse(Correo correo) {
-        //DatosVencimiento vencimiento = calcularDatosVencimiento(correo);
+        DatosVencimiento vencimiento = calcularDatosVencimiento(correo);
 
         return CorreoResponse.builder()
                 .id(correo.getId())
@@ -386,13 +386,14 @@ public class CorreoServiceImpl implements CorreoService {
                         ? correo.getCuenta().getEntidad().getNombreEntidad() : null)
                 .dominioEntidad(correo.getCuenta() != null && correo.getCuenta().getEntidad() != null
                         ? correo.getCuenta().getEntidad().getDominioCorreo() : null)
-                //.vencido(vencimiento.vencido)
-                //.diasTranscurridos(vencimiento.diasTranscurridos)
-                //.diasRestantes(vencimiento.diasRestantes)
+                .estado(correo.getEstado())
+                .vencido(vencimiento.vencido)
+                .diasTranscurridos(vencimiento.diasTranscurridos)
+                .diasRestantes(vencimiento.diasRestantes)
                 .build();
     }
 
-    /*
+
     private DatosVencimiento calcularDatosVencimiento(Correo correo) {
         if (correo.getEstado() != ESTADO.PENDIENTE ||
                 correo.getFechaRecepcion() == null ||
@@ -418,10 +419,20 @@ public class CorreoServiceImpl implements CorreoService {
         return new DatosVencimiento(vencido, diasTranscurridos, diasRestantes);
     }
 
+
+    private static class DatosVencimiento {
+        final boolean vencido;
+        final Long diasTranscurridos;
+        final Long diasRestantes;
+
+        DatosVencimiento(boolean vencido, Long diasTranscurridos, Long diasRestantes) {
+            this.vencido = vencido;
+            this.diasTranscurridos = diasTranscurridos;
+            this.diasRestantes = diasRestantes;
+        }
+    }
+
     // Clase interna simple (no record)
-    
-    
-     */
     
 }
 
