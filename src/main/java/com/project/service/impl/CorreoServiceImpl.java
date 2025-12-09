@@ -36,4 +36,40 @@ public class CorreoServiceImpl implements CorreoService {
 
 
     }
+
+
+    @Override
+    public void ingresarRadicadoEntrada(String correoId, String radicadoEntrada) {
+        Correo correo = correoRepository.findById(correoId).orElseThrow(
+                () -> new RuntimeException("Correo no encontrado")
+        );
+
+        correo.setRadicadoEntrada(radicadoEntrada);
+
+        correoRepository.save(correo);
+    }
+
+    @Override
+    public void ingresarRadicadoSalida(String correoId, String radicadoSalida) {
+        Correo correo = correoRepository.findById(correoId).orElseThrow(
+                () -> new RuntimeException("Correo no encontrado")
+        );
+
+        correo.setRadicadoSalida(radicadoSalida);
+
+        correoRepository.save(correo);
+    }
+
+
+    @Override
+    public void establecerPlazoEnDias(String correoId, Integer plazoRespuesta) {
+        Correo correo = correoRepository.findById(correoId).orElseThrow(
+                () -> new RuntimeException("Correo no encontrado")
+        );
+
+        correo.setPlazoRespuestaEnDias(plazoRespuesta);
+
+        correoRepository.save(correo);
+
+    }
 }

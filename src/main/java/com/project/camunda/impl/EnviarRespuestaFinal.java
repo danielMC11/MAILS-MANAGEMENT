@@ -21,6 +21,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class EnviarRespuestaFinal implements MailProcessor {
@@ -62,21 +64,19 @@ public class EnviarRespuestaFinal implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.INTEGRADOR
             );
 
+            if(!Util.isBusinessKeyAssociatedWithRoot(runtimeService, businessKey)) {
 
-            String processInstanceId = runtimeService.createProcessInstanceQuery()
-                    .processInstanceBusinessKey(businessKey)
-                    .active() // Asegura que esté activa
-                    .singleResult()
-                    .getId();
-
-            List<String> activityIds = runtimeService.getActiveActivityIds(processInstanceId);
-            boolean enActividad = activityIds.contains(ACTIVITY_ID);
-
-            ETAPA etapaActual = (ETAPA) runtimeService.getVariable(processInstanceId, "etapaActual");
+                String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
 
 
-            return correo.getCuenta().equals(cuentaTo) && esIntegrador && esIntegrador && enActividad && etapaActual == ETAPA.ENVIO;
+                List<String> activityIds = runtimeService.getActiveActivityIds(childInstanceId);
+                boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
+                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(childInstanceId, "etapaActual");
+
+
+                return correo.getCuenta().equals(cuentaTo) && esIntegrador && esIntegrador && enActividad && etapaActual == ETAPA.ENVIO;
+            }
         }
 
         return false;
@@ -86,12 +86,27 @@ public class EnviarRespuestaFinal implements MailProcessor {
     public void process(Mail mail) {
         String businessKey = mail.getOriginalMessageId();
 
+        String text = mail.getText();
+        String regex = "\\[R-S-\\d+\\]";
+        String radicadoSalida = null;
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(text);
+
+        if (matcher.find()) {
+            radicadoSalida =  matcher.group(0); // Devuelve la coincidencia completa, ej: "[R-E-1234]"
+        }
+
+        String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+
+
         Task task = taskService.createTaskQuery()
-                .processInstanceBusinessKey(businessKey)
+                .processInstanceId(childInstanceId)
                 .singleResult();
 
         if (task != null) {
             Map<String,Object> variables = new HashMap<>();
+            variables.put("radicadoSalida", radicadoSalida);
             variables.put("fechaFinalizacionIntegrador", Util.convertirDateALocalDatetime(mail.getReceivedDate()));
             taskService.complete(task.getId(), variables);
         }

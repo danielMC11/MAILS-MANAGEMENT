@@ -40,6 +40,7 @@ public class StartMailProcess implements MailProcessor {
 
         String from = mail.getFrom();
 
+
         String correoCompleto = Util.getCorreoCompleto(from);
 
         Cuenta cuenta = cuentaRepository.findByCorreoCuenta(correoCompleto).orElse(null);

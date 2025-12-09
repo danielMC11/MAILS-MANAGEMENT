@@ -56,19 +56,20 @@ public class EnviarBandejaSalida implements MailProcessor{
                     rol -> rol.getNombreRol() == ROL.INTEGRADOR
             );
 
-            String processInstanceId = runtimeService.createProcessInstanceQuery()
-                    .processInstanceBusinessKey(businessKey)
-                    .active() // Asegura que esté activa
-                    .singleResult()
-                    .getId();
+            if(!Util.isBusinessKeyAssociatedWithRoot(runtimeService, businessKey)) {
 
-            List<String> activityIds = runtimeService.getActiveActivityIds(processInstanceId);
-            boolean enActividad = activityIds.contains(ACTIVITY_ID);
-
-            ETAPA etapaActual = (ETAPA) runtimeService.getVariable(processInstanceId, "etapaActual");
+                String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
 
 
-            return esGestor && esIntegrador && enActividad && etapaActual == ETAPA.APROBACION;
+                List<String> activityIds = runtimeService.getActiveActivityIds(childInstanceId);
+                boolean enActividad = activityIds.contains(ACTIVITY_ID);
+
+                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(childInstanceId, "etapaActual");
+
+
+                return esGestor && esIntegrador && enActividad && etapaActual == ETAPA.APROBACION;
+            }
+
 
         }
 
@@ -79,8 +80,11 @@ public class EnviarBandejaSalida implements MailProcessor{
     public void process(Mail mail) {
         String businessKey = mail.getOriginalMessageId();
 
+        String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+
+
         Task task = taskService.createTaskQuery()
-                .processInstanceBusinessKey(businessKey)
+                .processInstanceId(childInstanceId)
                 .singleResult();
 
         if (task != null) {

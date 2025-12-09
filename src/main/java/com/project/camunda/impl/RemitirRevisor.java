@@ -55,20 +55,19 @@ public class RemitirRevisor implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.REVISOR
             );
 
-            String processInstanceId = runtimeService.createProcessInstanceQuery()
-                    .processInstanceBusinessKey(businessKey)
-                    .active() // Asegura que esté activa
-                    .singleResult()
-                    .getId();
+            if(!Util.isBusinessKeyAssociatedWithRoot(runtimeService, businessKey)) {
 
-            List<String> activityIds = runtimeService.getActiveActivityIds(processInstanceId);
-            boolean enActividad = activityIds.contains(ACTIVITY_ID);
-
-            ETAPA etapaActual = (ETAPA) runtimeService.getVariable(processInstanceId, "etapaActual");
+                String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
 
 
-            return esGestor && esRevisor && enActividad  &&  (etapaActual == ETAPA.ELABORACION || etapaActual == ETAPA.REVISION);
+                List<String> activityIds = runtimeService.getActiveActivityIds(childInstanceId);
+                boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
+                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(childInstanceId, "etapaActual");
+
+
+                return esGestor && esRevisor && enActividad && (etapaActual == ETAPA.ELABORACION || etapaActual == ETAPA.REVISION);
+            }
         }
 
         return false;
@@ -78,8 +77,10 @@ public class RemitirRevisor implements MailProcessor {
     public void process(Mail mail) {
         String businessKey = mail.getOriginalMessageId();
 
+        String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+
         Task task = taskService.createTaskQuery()
-                .processInstanceBusinessKey(businessKey)
+                .processInstanceId(childInstanceId)
                 .singleResult();
 
         if (task != null) {

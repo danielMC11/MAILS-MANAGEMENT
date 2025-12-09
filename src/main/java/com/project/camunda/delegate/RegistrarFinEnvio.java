@@ -26,6 +26,10 @@ public class RegistrarFinEnvio implements JavaDelegate {
         Long flujoEnvioId = (Long) delegateExecution.getVariable("flujoEnvioId");
         LocalDateTime fechaFinalizacionIntegrador =  (LocalDateTime) delegateExecution.getVariable("fechaFinalizacionIntegrador");
 
+        String radicadoSalida = (String) delegateExecution.getVariable("radicadoSalida");
+        correoService.ingresarRadicadoSalida(correoId, radicadoSalida);
+
+
         flujoCorreoService.terminarFlujo(flujoEnvioId, fechaFinalizacionIntegrador);
         correoService.registrarEnvioFinal(correoId, fechaFinalizacionIntegrador);
 

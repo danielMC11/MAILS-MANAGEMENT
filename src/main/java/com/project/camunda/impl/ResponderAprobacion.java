@@ -54,20 +54,20 @@ public class ResponderAprobacion implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.GESTOR
             );
 
-            String processInstanceId = runtimeService.createProcessInstanceQuery()
-                    .processInstanceBusinessKey(businessKey)
-                    .active() // Asegura que esté activa
-                    .singleResult()
-                    .getId();
 
-            List<String> activityIds = runtimeService.getActiveActivityIds(processInstanceId);
-            boolean enActividad = activityIds.contains(ACTIVITY_ID);
+            if(!Util.isBusinessKeyAssociatedWithRoot(runtimeService, businessKey)) {
 
-            ETAPA etapaActual = (ETAPA) runtimeService.getVariable(processInstanceId, "etapaActual");
+                String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
 
 
-            return esAprobador && esGestor && enActividad && etapaActual == ETAPA.APROBACION;
+                List<String> activityIds = runtimeService.getActiveActivityIds(childInstanceId);
+                boolean enActividad = activityIds.contains(ACTIVITY_ID);
 
+                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(childInstanceId, "etapaActual");
+
+
+                return esAprobador && esGestor && enActividad && etapaActual == ETAPA.APROBACION;
+            }
         }
 
         return false;
@@ -87,8 +87,11 @@ public class ResponderAprobacion implements MailProcessor {
             }
         }
 
+        String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+
+
         Task task = taskService.createTaskQuery()
-                .processInstanceBusinessKey(businessKey)
+                .processInstanceId(childInstanceId)
                 .singleResult();
 
         // Solo procede si la tarea existe y se encontró [R-OK]

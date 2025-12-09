@@ -1,15 +1,19 @@
 package com.project.camunda.delegate;
 
 
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
-@Configuration
+
 public class Util {
-
 
     public static String getNombreAlias(String emailString) {
         if (emailString == null) return "";
@@ -103,4 +107,55 @@ public class Util {
                 .toLocalDateTime();
 
     }
+
+    public static String getChildProcessInstanceId(RuntimeService runtimeService, String parentBusinessKey) {
+        // 1. Buscar el proceso PADRE
+        ProcessInstance parentInstance = runtimeService.createProcessInstanceQuery()
+                .processInstanceBusinessKey(parentBusinessKey)
+                .active()
+                .singleResult();
+
+        if (parentInstance == null) {
+            return null; // No existe el padre activo
+        }
+
+        // 2. Buscar el proceso HIJO vinculado por el ID del padre
+        ProcessInstance childInstance = runtimeService.createProcessInstanceQuery()
+                .superProcessInstanceId(parentInstance.getId())
+                .active()
+                .singleResult(); // Ojo: Si hay múltiples subprocesos paralelos, esto lanzará excepción
+
+        if (childInstance != null) {
+            return childInstance.getId();
+        }
+
+        return null; // El padre existe, pero no tiene subprocesos activos
+    }
+
+    public static boolean isBusinessKeyAssociatedWithRoot(RuntimeService runtimeService, String businessKey) {
+
+        // Buscamos una instancia de proceso activa que:
+        // 1. Tenga el Business Key proporcionado.
+        // 2. NO tenga un Super Process Instance ID (lo cual define a la instancia Root).
+
+        if (businessKey == null || runtimeService == null) {
+            return false;
+        }
+
+        ProcessInstance rootInstance = runtimeService.createProcessInstanceQuery()
+                .processInstanceBusinessKey(businessKey)
+                .superProcessInstanceId(null) // <--- Filtra estrictamente por la instancia Root
+                .active()
+                .singleResult();
+
+        // Si singleResult() devuelve un objeto (no null), significa que encontramos la instancia Root activa.
+        return rootInstance != null;
+    }
+
+
+
+
+
+
+
 }

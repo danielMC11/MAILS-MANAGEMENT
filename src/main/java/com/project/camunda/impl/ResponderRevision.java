@@ -55,21 +55,20 @@ public class ResponderRevision implements MailProcessor {
                     rol -> rol.getNombreRol() == ROL.GESTOR
             );
 
-            String processInstanceId = runtimeService.createProcessInstanceQuery()
-                    .processInstanceBusinessKey(businessKey)
-                    .active() // Asegura que esté activa
-                    .singleResult()
-                    .getId();
-
-            List<String> activityIds = runtimeService.getActiveActivityIds(processInstanceId);
-            boolean enActividad = activityIds.contains(ACTIVITY_ID);
-
-            ETAPA etapaActual = (ETAPA) runtimeService.getVariable(processInstanceId, "etapaActual");
+            if(!Util.isBusinessKeyAssociatedWithRoot(runtimeService, businessKey)) {
 
 
+                String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
 
-            return esRevisor && esGestor && enActividad && etapaActual == ETAPA.REVISION;
 
+                List<String> activityIds = runtimeService.getActiveActivityIds(childInstanceId);
+                boolean enActividad = activityIds.contains(ACTIVITY_ID);
+
+                ETAPA etapaActual = (ETAPA) runtimeService.getVariable(childInstanceId, "etapaActual");
+
+
+                return esRevisor && esGestor && enActividad && etapaActual == ETAPA.REVISION;
+            }
         }
 
         return false;
@@ -89,8 +88,11 @@ public class ResponderRevision implements MailProcessor {
             }
         }
 
+        String childInstanceId = Util.getChildProcessInstanceId(runtimeService, businessKey);
+
+
         Task task = taskService.createTaskQuery()
-                .processInstanceBusinessKey(businessKey)
+                .processInstanceId(childInstanceId)
                 .singleResult();
 
         if (task != null && resultadoRevision != null) {

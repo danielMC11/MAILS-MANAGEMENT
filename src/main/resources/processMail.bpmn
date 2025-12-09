@@ -11,7 +11,6 @@
         <bpmn:flowNodeRef>Activity_1byojux</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_1lhinv5</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0lsc3es</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>remitirGestor</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_0thd6m3" name="Gestor">
         <bpmn:flowNodeRef>Gateway_1rugpg3</bpmn:flowNodeRef>
@@ -107,8 +106,7 @@
     <bpmn:endEvent id="Event_1lhinv5" name="Correo gestionado">
       <bpmn:incoming>Flow_1pd0d99</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0gtmk0j" sourceRef="StartEvent_1" targetRef="remitirGestor" />
-    <bpmn:sequenceFlow id="Flow_1levnsr" sourceRef="remitirGestor" targetRef="Activity_0lsc3es" />
+    <bpmn:sequenceFlow id="Flow_0gtmk0j" sourceRef="StartEvent_1" targetRef="Activity_0lsc3es" />
     <bpmn:sequenceFlow id="Flow_1gw6qgu" sourceRef="Activity_0lsc3es" targetRef="Gateway_1rugpg3" />
     <bpmn:sequenceFlow id="Flow_1k8x6ki" name="Si" sourceRef="Gateway_19wr6nh" targetRef="Gateway_1rugpg3">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${devueltoRevision == true}</bpmn:conditionExpression>
@@ -141,13 +139,9 @@
     <bpmn:sequenceFlow id="Flow_0eprys3" sourceRef="enviarRespuestaFinal" targetRef="Activity_1byojux" />
     <bpmn:sequenceFlow id="Flow_1pd0d99" sourceRef="Activity_1byojux" targetRef="Event_1lhinv5" />
     <bpmn:serviceTask id="Activity_0lsc3es" name="Registrar inicio etapa elaboración" camunda:delegateExpression="${registrarInicioElaboracion}">
-      <bpmn:incoming>Flow_1levnsr</bpmn:incoming>
+      <bpmn:incoming>Flow_0gtmk0j</bpmn:incoming>
       <bpmn:outgoing>Flow_1gw6qgu</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="remitirGestor" name="Remitir a gestor">
-      <bpmn:incoming>Flow_0gtmk0j</bpmn:incoming>
-      <bpmn:outgoing>Flow_1levnsr</bpmn:outgoing>
-    </bpmn:userTask>
     <bpmn:userTask id="responderRevision" name="Responder solicitud de revisión">
       <bpmn:incoming>Flow_10714yi</bpmn:incoming>
       <bpmn:outgoing>Flow_1q9cgoz</bpmn:outgoing>
@@ -260,10 +254,6 @@
         <dc:Bounds x="580" y="115" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0hgdega_di" bpmnElement="remitirGestor">
-        <dc:Bounds x="390" y="115" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0c8z5vy" bpmnElement="responderRevision">
         <dc:Bounds x="1625" y="570" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -288,10 +278,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0gtmk0j_di" bpmnElement="Flow_0gtmk0j">
         <di:waypoint x="293" y="155" />
-        <di:waypoint x="390" y="155" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1levnsr_di" bpmnElement="Flow_1levnsr">
-        <di:waypoint x="490" y="155" />
         <di:waypoint x="580" y="155" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1gw6qgu_di" bpmnElement="Flow_1gw6qgu">
