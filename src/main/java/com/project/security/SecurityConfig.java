@@ -1,0 +1,52 @@
+package com.project.security;
+
+import com.project.exceptions.auth.CustomAccessDeniedHandler;
+import com.project.exceptions.auth.CustomUnauthorizedHandler;
+import com.project.security.jwt.JwtTokenFilter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static com.project.enums.ROL.INTEGRADOR;
+
+@Configuration
+@RequiredArgsConstructor
+@EnableWebSecurity
+public class SecurityConfig {
+
+	private final String[] WHITE_LIST_URL = {"/api/v1/auth/**"};
+	private final CustomUnauthorizedHandler customUnauthorizedHandler;
+	private final CustomAccessDeniedHandler customAccessDeniedHandler;
+	private final AuthenticationProvider authenticationProvider;
+	private final JwtTokenFilter jwtTokenFilter;
+	private final ExceptionHandlerFilter exceptionHandlerFilter;
+
+
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf(AbstractHttpConfigurer::disable)
+				.exceptionHandling(exceptions -> exceptions
+					.authenticationEntryPoint(customUnauthorizedHandler)
+					.accessDeniedHandler(customAccessDeniedHandler)
+				)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(request -> {
+					request.requestMatchers(WHITE_LIST_URL).permitAll();
+					request.requestMatchers("/api/v1/dashboard/estadisticas").hasRole(INTEGRADOR.name());
+					request.anyRequest().authenticated();
+				})
+				.addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+				.authenticationProvider(authenticationProvider);
+		return http.build();
+	}
+
+
+}

@@ -30,5 +30,6 @@ public interface UsuarioService {
 
     void cambiarEstado(Long id, boolean activo);
 
+    void actualizarPassword(String newPassword, Long userId);
 
 }

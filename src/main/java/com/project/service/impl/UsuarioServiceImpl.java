@@ -200,4 +200,12 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .activo(usuario.getActivo())
                 .build();
     }
+
+
+    @Override
+    public void actualizarPassword(String newPassword, Long userId) {
+        if (usuarioRepository.actualizarPassword(passwordEncoder.encode(newPassword), userId) == 0) {
+            throw new RuntimeException("Error al actualizar contraseña. El usuario no fue encontrado o la contraseña es la misma.");
+        }
+    }
 }

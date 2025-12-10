@@ -38,6 +38,27 @@ camunda.bpm:
     - classpath*:**/*.dmn11.xml
     - classpath*:**/*.form
 
+# Configuración del manejo de JWT
+jwt:
+  access: # Nuevo nivel de anidación
+    cookie: # Nuevo nivel de anidación
+      name: accessCookie
+
+  refresh: # Nuevo nivel de anidación
+    cookie: # Nuevo nivel de anidación
+      name: refreshCookie
+
+  # Clave secreta utilizada para firmar los tokens (DEBE ser mantenida segura)
+  secret: U29tZVN1cGVyU2VjcmV0S2V5Rm9ySldUU29tZVN1cGVyU2VjcmV0S2V5
+
+  # Tiempo de expiración del token de acceso (en milisegundos)
+  accessToken:
+    expirationMs: 86400000  # 60 segundos (1 minuto)
+
+  # Tiempo de expiración del token de refresco (en milisegundos)
+  refreshToken:
+    expirationMs: 86400000 # 86400000 milisegundos (24 horas o 1 día)
+
 gmail:
     address: danielcarrillo3200@gmail.com
     password: "iuhusedwfisimrzb"
