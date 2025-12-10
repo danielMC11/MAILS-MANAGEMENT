@@ -2,14 +2,17 @@ package com.project.entity;
 
 import com.project.enums.URGENCIA;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import com.project.enums.ESTADO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "correos")
 public class Correo {

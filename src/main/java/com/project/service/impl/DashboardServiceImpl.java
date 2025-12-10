@@ -1,18 +1,33 @@
 package com.project.service.impl;
 
+import com.project.dto.FiltroCorreoRequestDTO;
 import com.project.dto.dashboard.DashboardEstadisticasDTO;
 import com.project.dto.dashboard.DashboardEstadisticasResponse;
 import com.project.dto.dashboard.MetricaResponse;
-import com.project.repository.DashboardRepository;
+import com.project.entity.*;
+import com.project.enums.ESTADO;
+import com.project.enums.ROL;
+import com.project.repository.*;
 import com.project.service.DashboardService;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import jakarta.persistence.criteria.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +35,21 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Autowired
     private DashboardRepository dashboardRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private EntidadRepository entidadRepository;
+
+    @Autowired
+    private TipoSolicitudRepository tipoSolicitudRepository;
+
+    @Autowired
+    private CorreoRepository correoRepository;
+
+    @Autowired
+    private FlujoCorreoRepository flujoCorreoRepository;
 
     // Helper method para convertir cualquier objeto a Long de forma segura
     private Long safeToLong(Object obj) {
@@ -232,4 +262,185 @@ public class DashboardServiceImpl implements DashboardService {
                         row -> safeToLong(row[1])
                 ));
     }
+
+    @Override
+    public List<Map<String, Object>> obtenerGestores() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+
+        List<Map<String, Object>> resultado = usuarios.stream()
+                .filter(usuario -> usuario.getRoles().stream().anyMatch(
+                        rol -> rol.getNombreRol() == ROL.GESTOR))
+                .map(usuario -> {
+                    Map<String, Object> gestor = new HashMap<>();
+                    gestor.put("id", usuario.getId());
+                    gestor.put("nombre", usuario.getNombres() + " " + usuario.getApellidos());
+                    return gestor;
+                })
+                .collect(Collectors.toList());
+
+        // Agregar opción "Todos los gestores"
+        Map<String, Object> todos = new HashMap<>();
+        todos.put("id", null);
+        todos.put("nombre", "Todos los gestores");
+        resultado.add(0, todos);
+
+        return resultado;
+    }
+
+    @Override
+    public List<Map<String, Object>> obtenerEntidades() {
+        List<Entidad> entidades = entidadRepository.findAll();
+
+        List<Map<String, Object>> resultado = entidades.stream()
+                .map(entidad -> {
+                    Map<String, Object> entidadResultado = new HashMap<>();
+                    entidadResultado.put("id", entidad.getId());
+                    entidadResultado.put("nombre", entidad.getNombreEntidad());
+                    return entidadResultado;
+                })
+                .collect(Collectors.toList());
+
+        Map<String, Object> todos = new HashMap<>();
+        todos.put("id", null);
+        todos.put("nombre", "Todas las entidades");
+        resultado.add(0, todos);
+
+        return resultado;
+    }
+
+    @Override
+    public List<Map<String, Object>> obtenerTipoSolicitudes() {
+        List<TipoSolicitud> tipoSolicitudes = tipoSolicitudRepository.findAll();
+
+        List<Map<String, Object>> resultado = tipoSolicitudes.stream()
+                .map(tipoSolicitud -> {
+                    Map<String, Object> tipoSolicitudResultado = new HashMap<>();
+                    tipoSolicitudResultado.put("id", tipoSolicitud.getId());
+                    tipoSolicitudResultado.put("nombre", tipoSolicitud.getNombre());
+                    return tipoSolicitudResultado;
+                })
+                .collect(Collectors.toList());
+
+        Map<String, Object> todos = new HashMap<>();
+        todos.put("id", null);
+        todos.put("nombre", "Todos los tipos de solicitudes");
+        resultado.add(0, todos);
+
+        return resultado;
+    }
+
+
+    @Override
+    @Transactional
+    public Page<Correo> filtrarCorreos(FiltroCorreoRequestDTO filtro, Pageable pageable) {
+
+        // Construir la especificación (query dinámica) basada en los filtros
+        Specification<Correo> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // 1. Filtrar por fechas (si están presentes)
+            if (filtro.getFechaInicio() != null) {
+                LocalDateTime inicio = filtro.getFechaInicio().atStartOfDay();
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(
+                        root.get("fechaRecepcion"), inicio));
+            }
+
+            if (filtro.getFechaFin() != null) {
+                LocalDateTime fin = filtro.getFechaFin().atTime(LocalTime.MAX);
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(
+                        root.get("fechaRecepcion"), fin));
+            }
+
+            // 2. Filtrar por gestor (usuario asignado en el flujo de correos)
+            if (filtro.getGestorId() != null) {
+                Subquery<String> subquery = query.subquery(String.class);
+                Root<FlujoCorreos> flujoRoot = subquery.from(FlujoCorreos.class);
+
+                // ✅ CORRECTO: Acceder a través de la relación
+                subquery.select(flujoRoot.get("correo").get("id"));
+
+                subquery.where(criteriaBuilder.and(
+                        criteriaBuilder.equal(flujoRoot.get("usuario").get("id"), filtro.getGestorId()),
+                        criteriaBuilder.isNotNull(flujoRoot.get("fechaAsignacion")),
+                        criteriaBuilder.isNull(flujoRoot.get("fechaFinalizacion"))
+                ));
+
+                // ✅ CORRECTO: String IN Subquery<String>
+                predicates.add(criteriaBuilder.in(root.get("id")).value(subquery));
+            }
+
+            // 3. Filtrar por entidad (a través de la cuenta)
+            if (filtro.getEntidadId() != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("cuenta").get("entidad").get("id"),
+                        filtro.getEntidadId()
+                ));
+            }
+
+            // 4. Filtrar por estado
+            if (filtro.getEstado() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("estado"), filtro.getEstado()));
+            }
+
+            // 5. Filtrar por tipo de solicitud
+            if (filtro.getTipoSolicitudId() != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("tipoSolicitud").get("id"),
+                        filtro.getTipoSolicitudId()
+                ));
+            }
+
+            // 6. Filtrar por urgencia
+            if (filtro.getUrgencia() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("urgencia"), filtro.getUrgencia()));
+            }
+
+            // 7. Búsqueda de texto en múltiples campos
+            if (filtro.getBuscar() != null && !filtro.getBuscar().trim().isEmpty()) {
+                String busqueda = "%" + filtro.getBuscar().toLowerCase() + "%";
+
+                Predicate radicadoEntrada = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("radicadoEntrada")),
+                        busqueda
+                );
+
+                Predicate radicadoSalida = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("radicadoSalida")),
+                        busqueda
+                );
+
+                Predicate asunto = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("asunto")),
+                        busqueda
+                );
+
+                // Buscar en el correo de la cuenta (remitente)
+                Predicate remitente = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("cuenta").get("correoCuenta")),
+                        busqueda
+                );
+
+                Predicate gestionId = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("gestionId")),
+                        busqueda
+                );
+
+                // Buscar también en el cuerpo del correo si es necesario
+                Predicate cuerpoTexto = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("cuerpoTexto")),
+                        busqueda
+                );
+
+                predicates.add(criteriaBuilder.or(
+                        radicadoEntrada, radicadoSalida, asunto, remitente, gestionId, cuerpoTexto
+                ));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        // Aplicar la especificación y la paginación
+        return correoRepository.findAll(spec, pageable);
+    }
+
 }

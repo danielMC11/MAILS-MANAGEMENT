@@ -2,13 +2,16 @@ package com.project.entity;
 
 import com.project.enums.ETAPA;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "flujo_correos")
 public class FlujoCorreos {

@@ -1,5 +1,6 @@
 package com.project.repository;
 
+import com.project.entity.Correo;
 import com.project.entity.FlujoCorreos;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -67,4 +68,7 @@ public interface FlujoCorreoRepository extends JpaRepository<FlujoCorreos, Long>
 
     // Consultas paginadas
     Page<FlujoCorreos> findAll(org.springframework.data.jpa.domain.Specification<FlujoCorreos> spec, Pageable pageable);
+
+    @Query("SELECT f FROM FlujoCorreos f WHERE f.correo = :correo ORDER BY f.fechaAsignacion DESC")
+    List<FlujoCorreos> findByCorreoOrderByFechaAsignacionDesc(@Param("correo") Correo correo);
 }
