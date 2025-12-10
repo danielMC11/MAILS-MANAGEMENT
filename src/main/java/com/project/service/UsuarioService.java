@@ -28,8 +28,11 @@ public interface UsuarioService {
 
     UsuarioResponse obtenerUsuarioPorId(Long id);
 
+
     void cambiarEstado(Long id, boolean activo);
 
     void actualizarPassword(String newPassword, Long userId);
+
+    UsuarioResponse obtenerUsuarioPorCorreo(String correo);
 
 }

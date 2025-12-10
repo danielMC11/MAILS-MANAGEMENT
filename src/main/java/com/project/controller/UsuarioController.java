@@ -140,9 +140,8 @@ public class UsuarioController {
     @GetMapping("correo/{correo}")
     public ResponseEntity<UsuarioResponse> obtenerUsuarioPorCorreo(
             @PathVariable("correo") String correo) {
-        // Necesitaríamos agregar este método al service
-        // Por ahora usar el existente y buscar por ID
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        UsuarioResponse usuario = usuarioService.obtenerUsuarioPorCorreo(correo);
+        return ResponseEntity.ok(usuario);
     }
 
 

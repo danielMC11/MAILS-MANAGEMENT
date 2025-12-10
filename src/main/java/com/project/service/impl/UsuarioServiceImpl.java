@@ -169,6 +169,12 @@ public class UsuarioServiceImpl implements UsuarioService {
                     ". Roles válidos: INTEGRADOR, GESTOR, REVISOR, APROBADOR");
         }
     }
+    @Override
+    public UsuarioResponse obtenerUsuarioPorCorreo(String correo) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con correo: " + correo));
+        return construirResponse(usuario);
+    }
 
     @Override
     public UsuarioResponse obtenerUsuarioPorId(Long id) {
