@@ -53,7 +53,7 @@ public class CorreoServiceImpl implements CorreoService {
     public void ingresarDatosEntrada(String correoId, String radicadoEntrada, Integer plazoRespuestaEnDias, String tipoSolicitudNombre, String nivelUrgencia) {
         Correo correo = obtenerCorreoEntity(correoId);
 
-        if (radicadoEntrada != null && !radicadoEntrada.equals("")) {
+        if (radicadoEntrada == null && radicadoEntrada.equals("")) {
             correo.setRadicadoEntrada(null);
         } else {
             correo.setRadicadoEntrada(radicadoEntrada);

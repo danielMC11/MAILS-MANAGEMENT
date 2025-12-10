@@ -74,7 +74,7 @@ public class EnviarRespuestaFinal implements MailProcessor {
                 ETAPA etapaActual = (ETAPA) runtimeService.getVariable(activeProcessInstanceId, "etapaActual");
 
 
-                return correo.getCuenta().equals(cuentaTo) && esIntegrador && esIntegrador && enActividad && etapaActual == ETAPA.ENVIO;
+                return correo.getCuenta().getCorreoCuenta().equals(cuentaTo.getCorreoCuenta()) && esIntegrador && enActividad && etapaActual == ETAPA.ENVIO;
 
         }
 
