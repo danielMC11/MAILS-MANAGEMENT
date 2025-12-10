@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/entidades/")
 public class EntidadController {
@@ -37,5 +39,17 @@ public class EntidadController {
     public ResponseEntity<?> eliminarEntidad(@PathVariable("id") Long id) {
         entidadService.eliminarEntidad(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EntidadResponse>> listarEntidades() {
+        List<EntidadResponse> entidades = entidadService.listarEntidades();
+        return ResponseEntity.ok(entidades);
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<EntidadResponse>> buscarEntidades(@RequestParam("nombre") String nombre) {
+        List<EntidadResponse> entidades = entidadService.buscarPorNombre(nombre);
+        return ResponseEntity.ok(entidades);
     }
 }

@@ -17,5 +17,5 @@ public class CuentaResponse {
     private String nombreCuenta;
     private String correoCuenta;
     private Long entidadId;
-    private String nombreEntidad; // Opcional: para mostrar info de la entidad
+    private String nombreEntidad;
 }
