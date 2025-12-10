@@ -39,6 +39,11 @@ public class UsuarioController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("reactivar/{id}")
+    public ResponseEntity<?> reactivarUsuario(@PathVariable("id") Long id) {
+        usuarioService.reactivarUsuario(id);
+        return ResponseEntity.ok().build();
+    }
     @PutMapping("actualizar/{id}")
     public ResponseEntity<?> actualizarUsuario(@PathVariable("id") Long id, @Valid @RequestBody UsuarioActualizarRequest request) {
         return ResponseEntity.ok(usuarioService.actualizarUsuario(id, request));

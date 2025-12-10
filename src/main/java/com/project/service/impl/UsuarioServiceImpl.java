@@ -118,7 +118,19 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(
                 () ->  new IllegalArgumentException("Usuario no encontrado: " + id)
         );
-        usuarioRepository.delete(usuario);
+        usuario.setActivo(false);
+        usuarioRepository.save(usuario);
+    }
+
+    @Override
+    @Transactional
+    public void reactivarUsuario(Long id){
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(
+                () ->  new IllegalArgumentException("Usuario no encontrado: " + id)
+        );
+        usuario.setActivo(true);
+        usuarioRepository.save(usuario);
+
     }
 
     // ====================  MÉTODOS PARA LISTAR ====================

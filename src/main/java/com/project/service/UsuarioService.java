@@ -17,6 +17,8 @@ public interface UsuarioService {
 
     void eliminarUsuario(Long id);
 
+    void reactivarUsuario(Long id);
+
     //  MÉTODOS PARA LISTAR
     List<UsuarioResponse> listarTodosUsuarios();
 
