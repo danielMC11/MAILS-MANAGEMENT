@@ -28,6 +28,9 @@ public class StartMailProcess implements MailProcessor {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private EntidadRepository entidadRepository;
+
 
     @Autowired
     private CuentaRepository cuentaRepository;
@@ -68,8 +71,10 @@ public class StartMailProcess implements MailProcessor {
         String from = mail.getFrom();
 
         String correoCompleto = Util.getCorreoCompleto(from);
+        String dominioCorreo = Util.getDominio(correoCompleto);
 
-        return usuarioRepository.findByCorreo(correoCompleto).isEmpty();
+        return usuarioRepository.findByCorreo(correoCompleto).isEmpty()
+                && entidadRepository.findByDominioCorreo(dominioCorreo).isPresent();
 
     }
 

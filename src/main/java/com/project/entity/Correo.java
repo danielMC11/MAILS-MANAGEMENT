@@ -1,5 +1,6 @@
 package com.project.entity;
 
+import com.project.enums.URGENCIA;
 import jakarta.persistence.*;
 import lombok.Data;
 import com.project.enums.ESTADO;
@@ -27,6 +28,9 @@ public class Correo {
 
     @Enumerated(EnumType.STRING)
     private ESTADO estado;
+
+    @Enumerated(EnumType.STRING)
+    private URGENCIA urgencia;
 
     private LocalDateTime fechaRecepcion;
 

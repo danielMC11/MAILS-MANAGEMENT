@@ -18,7 +18,7 @@ public class Cuenta {
     @Column(name = "correo_cuenta", length = 64)
     private String correoCuenta;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "entidad_id")
     private Entidad entidad;
 }

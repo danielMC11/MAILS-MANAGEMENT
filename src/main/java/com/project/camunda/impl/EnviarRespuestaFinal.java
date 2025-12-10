@@ -86,15 +86,13 @@ public class EnviarRespuestaFinal implements MailProcessor {
         String businessKey = mail.getOriginalMessageId();
 
         String text = mail.getText();
-        String regex = "\\[R-S-(\\d+)\\]"; // <--- CAMBIO CLAVE
+        String radicadoSalida = null;
 
-        String radicadoSalida = null; // Cambiado el nombre de la variable para reflejar que es solo el número
+        Pattern patternRE = Pattern.compile("\\[RADICADO-SALIDA-(\\d+)\\]");
+        Matcher matcherRE = patternRE.matcher(text);
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            radicadoSalida = matcher.group(1);
+        if (matcherRE.find()) {
+            radicadoSalida = matcherRE.group(1);
         }
 
         String activeProcessInstanceId = Util.getActiveProcessInstanceId(runtimeService, businessKey);

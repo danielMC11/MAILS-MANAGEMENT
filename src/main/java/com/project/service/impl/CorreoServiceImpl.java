@@ -4,8 +4,11 @@ import com.project.dto.correo.CorreoEstadisticasResponse;
 import com.project.dto.correo.CorreoFilterRequest;
 import com.project.dto.correo.CorreoResponse;
 import com.project.entity.Correo;
+import com.project.entity.TipoSolicitud;
 import com.project.enums.ESTADO;
+import com.project.enums.URGENCIA;
 import com.project.repository.CorreoRepository;
+import com.project.repository.TipoSolicitudRepository;
 import com.project.service.CorreoService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 public class CorreoServiceImpl implements CorreoService {
 
     private final CorreoRepository correoRepository;
+    private final TipoSolicitudRepository tipoSolicitudRepository;
 
     @Override
     public Correo registrarNuevoCorreo(Correo correo) {
@@ -46,10 +50,26 @@ public class CorreoServiceImpl implements CorreoService {
 
 
     @Override
-    public void ingresarRadicadoEntrada(String correoId, String radicadoEntrada) {
+    public void ingresarDatosEntrada(String correoId, String radicadoEntrada, Integer plazoRespuestaEnDias, String tipoSolicitudNombre, String nivelUrgencia) {
         Correo correo = obtenerCorreoEntity(correoId);
 
-        correo.setRadicadoEntrada(radicadoEntrada);
+        if (radicadoEntrada != null && !radicadoEntrada.equals("")) {
+            correo.setRadicadoEntrada(null);
+        } else {
+            correo.setRadicadoEntrada(radicadoEntrada);
+        }
+
+        correo.setPlazoRespuestaEnDias(plazoRespuestaEnDias);
+
+        if(tipoSolicitudNombre != null && !tipoSolicitudNombre.isEmpty()) {
+            tipoSolicitudRepository.findByNombre(tipoSolicitudNombre)
+                    .ifPresent(correo::setTipoSolicitud);
+        }
+
+        if (nivelUrgencia != null) {
+            URGENCIA urgenciaEnum = URGENCIA.valueOf(nivelUrgencia.toUpperCase());
+            correo.setUrgencia(urgenciaEnum);
+        }
 
         correoRepository.save(correo);
     }
@@ -65,16 +85,6 @@ public class CorreoServiceImpl implements CorreoService {
 
 
     @Override
-    public void establecerPlazoEnDias(String correoId, Integer plazoRespuesta) {
-        Correo correo = obtenerCorreoEntity(correoId);
-
-        correo.setPlazoRespuestaEnDias(plazoRespuesta);
-
-        correoRepository.save(correo);
-
-    }
-
-    @Override
     public void ingresarGestionId(String correoId, String gestionId) {
         Correo correo = obtenerCorreoEntity(correoId);
 
@@ -87,7 +97,9 @@ public class CorreoServiceImpl implements CorreoService {
     @Override
     public void vencerCorreo(String correoId) {
         Correo correo = obtenerCorreoEntity(correoId);
+
         correo.setEstado(ESTADO.VENCIDO);
+
         correoRepository.save(correo);
     }
 

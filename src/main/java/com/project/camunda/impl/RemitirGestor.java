@@ -94,21 +94,37 @@ public class RemitirGestor implements MailProcessor {
 
         String text = mail.getText();
 
-        String regex = "\\[R-E-(\\d+)\\]";
+        String tipoSolicitudNombre = "GENERAL";
 
-        String radicadoEntrada = "SIN-ASIGNAR";
+        Pattern patternTS = Pattern.compile("\\[TIPO-SOLICITUD-(.+)\\]");
+        Matcher matcherTS = patternTS.matcher(text);
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(text);
+        if (matcherTS.find()) {
+            tipoSolicitudNombre = matcherTS.group(1).replace("*", "").trim();
+        }
 
-        if (matcher.find()) {
-            radicadoEntrada = matcher.group(1);
+        String nivelUrgencia = "MEDIA";
+
+        Pattern patternNU = Pattern.compile("\\[NIVEL-URGENCIA-(.+)\\]");
+        Matcher matcherNU = patternNU.matcher(text);
+
+        if (matcherNU.find()) {
+            nivelUrgencia = matcherNU.group(1).replace("*", "").trim();
+        }
+
+        String radicadoEntrada = null;
+
+        Pattern patternRE = Pattern.compile("\\[RADICADO-ENTRADA-(\\d+)\\]");
+        Matcher matcherRE = patternRE.matcher(text);
+
+        if (matcherRE.find()) {
+            radicadoEntrada = matcherRE.group(1);
         }
 
         int diasPlazo = 0;
         LocalDateTime fechaLimiteRespuesta = null; // Esta será la fecha de vencimiento
 
-        Pattern patternPR = Pattern.compile("\\[P-R-(\\d+)\\]");
+        Pattern patternPR = Pattern.compile("\\[PLAZO-RESPUESTA-(\\d+)\\]");
         Matcher matcherPR = patternPR.matcher(text);
 
         if (matcherPR.find()) {
@@ -149,6 +165,8 @@ public class RemitirGestor implements MailProcessor {
         if (task != null) {
             Map<String,Object> variables = new HashMap<>();
             variables.put("radicadoEntrada", radicadoEntrada);
+            variables.put("tipoSolicitudNombre", tipoSolicitudNombre);
+            variables.put("nivelUrgencia", nivelUrgencia);
             variables.put("plazoRespuestaEnDias", diasPlazo);
             variables.put("fechaAlerta", fechaAlertaStr);
             variables.put("fechaVencimiento", fechaVencimientoStr);

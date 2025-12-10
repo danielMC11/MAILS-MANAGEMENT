@@ -15,12 +15,10 @@ public interface CorreoService {
     Correo registrarNuevoCorreo(Correo correo);
 
     void registrarEnvioFinal(String correoId, LocalDateTime fechaRespuesta);
-    
-    void ingresarRadicadoEntrada(String correoId, String radicadoEntrada);
+
+    void ingresarDatosEntrada(String correoId, String radicadoEntrada, Integer plazoRespuestaEnDias, String tipoSolicitudNombre, String nivelUrgencia);
 
     void ingresarRadicadoSalida(String correoId, String radicadoSalida);
-
-    void establecerPlazoEnDias(String correoId, Integer plazoRespuesta);
 
     void ingresarGestionId(String correoId, String gestionId);
 

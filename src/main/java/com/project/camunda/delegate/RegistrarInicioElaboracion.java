@@ -34,12 +34,11 @@ public class RegistrarInicioElaboracion implements JavaDelegate {
 
 
         String radicadoEntrada = (String) delegateExecution.getVariable("radicadoEntrada");
-        if(!radicadoEntrada.equals("SIN-ASIGNAR")) {
-            correoService.ingresarRadicadoEntrada(correoId, radicadoEntrada);
-        }
-
         Integer plazoRespuestaEnDias = (Integer) delegateExecution.getVariable("plazoRespuestaEnDias");
-        correoService.establecerPlazoEnDias(correoId, plazoRespuestaEnDias);
+        String tipoSolicitudNombre = (String) delegateExecution.getVariable("tipoSolicitudNombre");
+        String nivelUrgencia = (String) delegateExecution.getVariable("nivelUrgencia");
+
+        correoService.ingresarDatosEntrada(correoId, radicadoEntrada, plazoRespuestaEnDias, tipoSolicitudNombre, nivelUrgencia);
 
         FlujoCorreos flujoCorreo = flujoCorreoService.iniciarFlujo(correoId, correoGestor, ETAPA.ELABORACION, fechaAsignacionGestor);
 

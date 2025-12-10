@@ -30,8 +30,6 @@ public class CuentaServiceImpl implements CuentaService {
 
         String nombreAlias = Util.getNombreAlias(from);
         String nombreCuenta = Util.getCuenta(correoCompleto);
-        String dominioCorreo = Util.getDominio(correoCompleto);
-        String nombreEntidad = Util.getNombreEntidad(dominioCorreo);
 
         Cuenta cuentaNueva = new Cuenta();
         if (nombreAlias != null && !nombreAlias.isEmpty()) {
@@ -41,20 +39,14 @@ public class CuentaServiceImpl implements CuentaService {
         }
         cuentaNueva.setCorreoCuenta(correoCompleto);
 
-        entidadRepository.findByDominioCorreo(dominioCorreo).ifPresentOrElse(entidad -> {
-                        cuentaNueva.setEntidad(entidad);
-                        cuentaRepository.save(cuentaNueva);
-                    }, () -> {
-                        Entidad entidad = new Entidad();
-                        entidad.setNombreEntidad(nombreEntidad);
-                        entidad.setDominioCorreo(dominioCorreo);
+        String dominioCorreo = Util.getDominio(correoCompleto);
+        Entidad entidad = entidadRepository.findByDominioCorreo(dominioCorreo)
+                .orElseThrow((() -> new RuntimeException("Entidad no encontrada")));
+        cuentaNueva.setEntidad(entidad);
 
-                        Entidad entidadGuardada = entidadRepository.save(entidad);
+        cuentaRepository.save(cuentaNueva);
 
-                        cuentaNueva.setEntidad(entidadGuardada);
-                        cuentaRepository.save(cuentaNueva);
-                    }
-            );
+
         }
 
     @Override
