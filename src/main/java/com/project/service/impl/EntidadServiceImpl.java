@@ -11,6 +11,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class EntidadServiceImpl implements EntidadService {
 
@@ -39,11 +42,7 @@ public class EntidadServiceImpl implements EntidadService {
         Entidad entidadGuardada = entidadRepository.save(nuevaEntidad);
 
         // Construir y retornar Response
-        return EntidadResponse.builder()
-                .id(entidadGuardada.getId())
-                .nombreEntidad(entidadGuardada.getNombreEntidad())
-                .dominioCorreo(entidadGuardada.getDominioCorreo())
-                .build();
+        return toEntidadResponse(entidadGuardada);
     }
 
     @Transactional
@@ -71,11 +70,7 @@ public class EntidadServiceImpl implements EntidadService {
         Entidad entidadActualizada = entidadRepository.save(entidad);
 
         // Construir y retornar Response
-        return EntidadResponse.builder()
-                .id(entidadActualizada.getId())
-                .nombreEntidad(entidadActualizada.getNombreEntidad())
-                .dominioCorreo(entidadActualizada.getDominioCorreo())
-                .build();
+        return toEntidadResponse(entidadActualizada);
     }
 
     @Override
@@ -95,5 +90,27 @@ public class EntidadServiceImpl implements EntidadService {
 
         // Eliminar la entidad
         entidadRepository.delete(entidad);
+    }
+
+    @Override
+    public List<EntidadResponse> listarEntidades() {
+        return entidadRepository.findAll().stream()
+                .map(this::toEntidadResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EntidadResponse> buscarPorNombre(String nombre) {
+        return entidadRepository.findByNombreEntidadContainingIgnoreCase(nombre).stream()
+                .map(this::toEntidadResponse)
+                .collect(Collectors.toList());
+    }
+
+    private EntidadResponse toEntidadResponse(Entidad entidad) {
+        return EntidadResponse.builder()
+                .id(entidad.getId())
+                .nombreEntidad(entidad.getNombreEntidad())
+                .dominioCorreo(entidad.getDominioCorreo())
+                .build();
     }
 }

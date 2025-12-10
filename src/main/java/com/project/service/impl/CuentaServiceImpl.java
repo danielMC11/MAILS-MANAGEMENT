@@ -13,6 +13,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class CuentaServiceImpl implements CuentaService {
@@ -91,13 +94,7 @@ public class CuentaServiceImpl implements CuentaService {
     Cuenta cuentaGuardada = cuentaRepository.save(nuevaCuenta);
 
     // 6. Construir y retornar response
-        return CuentaResponse.builder()
-                .id(cuentaGuardada.getId())
-            .nombreCuenta(cuentaGuardada.getNombreCuenta())
-            .correoCuenta(cuentaGuardada.getCorreoCuenta())
-            .entidadId(cuentaGuardada.getEntidad().getId())
-            .nombreEntidad(cuentaGuardada.getEntidad().getNombreEntidad())
-            .build();
+    return toCuentaResponse(cuentaGuardada);
 }
 
     @Transactional
@@ -141,13 +138,7 @@ public class CuentaServiceImpl implements CuentaService {
         Cuenta cuentaActualizada = cuentaRepository.save(cuenta);
 
         // 7. Construir y retornar response
-        return CuentaResponse.builder()
-                .id(cuentaActualizada.getId())
-                .nombreCuenta(cuentaActualizada.getNombreCuenta())
-                .correoCuenta(cuentaActualizada.getCorreoCuenta())
-                .entidadId(cuentaActualizada.getEntidad().getId())
-                .nombreEntidad(cuentaActualizada.getEntidad().getNombreEntidad())
-                .build();
+        return toCuentaResponse(cuentaActualizada);
     }
 
     @Override
@@ -164,6 +155,25 @@ public class CuentaServiceImpl implements CuentaService {
         cuentaRepository.delete(cuenta);
     }
 
+    @Override
+    public List<CuentaResponse> listarCuentas() {
+        return cuentaRepository.findAllWithEntidad().stream()
+                .map(this::toCuentaResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CuentaResponse> buscarCuentas(String query) {
+        return cuentaRepository.search(query).stream()
+                .map(this::toCuentaResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long contarCuentasPorEntidad(Long entidadId) {
+        return cuentaRepository.countByEntidadId(entidadId);
+    }
+
     // Método helper para extraer dominio de un correo
     private String extractDomain(String email) {
         if (email == null || !email.contains("@")) {
@@ -172,5 +182,13 @@ public class CuentaServiceImpl implements CuentaService {
         return email.substring(email.indexOf("@") + 1);
     }
 
-
+    private CuentaResponse toCuentaResponse(Cuenta cuenta) {
+        return CuentaResponse.builder()
+                .id(cuenta.getId())
+                .nombreCuenta(cuenta.getNombreCuenta())
+                .correoCuenta(cuenta.getCorreoCuenta())
+                .entidadId(cuenta.getEntidad().getId())
+                .nombreEntidad(cuenta.getEntidad().getNombreEntidad())
+                .build();
+    }
 }
