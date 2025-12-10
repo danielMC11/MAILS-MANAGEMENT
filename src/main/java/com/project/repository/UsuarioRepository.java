@@ -17,7 +17,11 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
+    Optional<Usuario> findByCorreoAndActivo(String correo, Boolean activo);
+
+
     Optional<Usuario> findByCorreo(String correo);
+
 
     @Transactional
     void deleteById(Long id);
@@ -42,5 +46,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Modifying
     @Query("update Usuario u set u.password = :password where u.id = :id")
     int actualizarPassword(@Param("password") String password, @Param("id") Long id);
+
+
 
 }
