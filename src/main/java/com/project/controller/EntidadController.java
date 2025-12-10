@@ -1,5 +1,6 @@
 package com.project.controller;
 
+
 import com.project.dto.entidad.EntidadActualizarRequest;
 import com.project.dto.entidad.EntidadCrearRequest;
 import com.project.dto.entidad.EntidadResponse;
@@ -52,4 +53,5 @@ public class EntidadController {
         List<EntidadResponse> entidades = entidadService.buscarPorNombre(nombre);
         return ResponseEntity.ok(entidades);
     }
+
 }

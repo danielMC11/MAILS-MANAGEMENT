@@ -31,7 +31,7 @@ public interface DashboardRepository extends JpaRepository<Correo, Long> {
                         ELSE NULL 
                     END
                 ), 
-                1
+                3
             ) as tiempo_promedio_respuesta,
             (SELECT COUNT(*) FROM entidades) as total_entidades,
             (SELECT COUNT(*) FROM cuentas) as total_cuentas,

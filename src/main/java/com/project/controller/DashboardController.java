@@ -43,4 +43,5 @@ public class DashboardController {
     public ResponseEntity<List<MetricaResponse>> obtenerKPIsPrincipales() {
         return ResponseEntity.ok(dashboardService.obtenerKPIsPrincipales());
     }
+
 }

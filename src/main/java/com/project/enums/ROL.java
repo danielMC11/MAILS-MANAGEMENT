@@ -4,5 +4,7 @@ public enum ROL {
     INTEGRADOR,
     GESTOR,
     REVISOR,
-    APROBADOR
+    APROBADOR,
+    ADMIN,
+    AUDITOR
 }
