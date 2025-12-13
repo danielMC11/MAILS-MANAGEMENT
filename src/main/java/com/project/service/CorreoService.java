@@ -29,6 +29,8 @@ public interface CorreoService {
     Page<CorreoResponse> listarCorreos(CorreoFilterRequest filtro);
     List<CorreoResponse> buscarCorreosPorAsunto(String asunto);
 
+
+
     // Consultas por relaciones
     List<CorreoResponse> obtenerCorreosPorCuenta(Long cuentaId);
     List<CorreoResponse> obtenerCorreosPorEntidad(Long entidadId);
